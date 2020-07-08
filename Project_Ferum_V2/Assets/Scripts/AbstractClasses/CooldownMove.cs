@@ -12,7 +12,8 @@ public abstract class CooldownMove : IMove
     private bool isReady;
 
     /* Abstract Class constructor */
-    public CooldownMove(float MAX_CD) {
+    public CooldownMove(float MAX_CD, bool moveDisabled) : base(moveDisabled)
+    {
         maxCooldown = MAX_CD;
         cdTimer = 0f;
         isReady = true;

@@ -13,7 +13,7 @@ public abstract class AmmoMove : IMove
     private float regenTimer;
 
     /* Ammo move constructor */
-    public AmmoMove(int MAX_AMMO, float REGEN_RATE) {
+    public AmmoMove(int MAX_AMMO, float REGEN_RATE, bool moveDisabled) : base(moveDisabled) {
         maxAmmo = MAX_AMMO;
         curAmmo = MAX_AMMO;
 
@@ -29,6 +29,7 @@ public abstract class AmmoMove : IMove
             /* Increment current ammo count by one once passed regen rate */
             if (regenTimer >= regenRate) {
                 curAmmo = (curAmmo == maxAmmo) ? maxAmmo : curAmmo + 1;
+                regenTimer = 0f;
             }
         }
     }
@@ -40,6 +41,7 @@ public abstract class AmmoMove : IMove
 
     public void useAmmo() {
         curAmmo--;
+        Debug.Log("Ammo Used! Ammo left: " + curAmmo);
     }
 
 }

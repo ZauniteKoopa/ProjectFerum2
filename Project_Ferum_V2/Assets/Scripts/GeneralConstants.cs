@@ -9,6 +9,7 @@ public class GeneralConstants
     public const string ENEMY_TAG = "Enemy";
     public const string PLAYER_ATTK_TAG = "PlayerAttack";
     public const string ENEMY_ATTK_TAG = "EnemyAttack";
+    public const string WALL_TAG = "Wall";
 
     /* Stat IDs */
     public enum statIDs

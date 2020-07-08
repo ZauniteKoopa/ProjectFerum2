@@ -25,14 +25,12 @@ public class EntityStatus : MonoBehaviour
     /* Health */
     [SerializeField]
     private float maxHealth = 0f;
-    [SerializeField]
     private float curHealth = 0f;
     [Space(20)]
 
     /* Armor */
     [SerializeField]
     private float maxArmor = 0f;
-    [SerializeField]
     private float curArmor = 0f;
 
     /* Stat effects - to be added */
