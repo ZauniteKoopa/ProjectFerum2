@@ -29,4 +29,19 @@ public class ProjectileBehav : Hitbox
             Destroy(gameObject);
         }
     }
+
+    void OnTriggerEnter2D(Collider2D tgt) {
+
+        /* Behavior when an enemy is hit */
+        if(tgt.tag == GeneralConstants.ENEMY_TAG) {
+            EntityStatus tgtStatus = tgt.GetComponent<EntityStatus>();
+            applyEffects(tgtStatus);
+            Destroy(gameObject);
+        }
+
+        /* Behavior when wall is hit */
+        if(tgt.tag == GeneralConstants.WALL_TAG) {
+            Destroy(gameObject);
+        }
+    }
 }

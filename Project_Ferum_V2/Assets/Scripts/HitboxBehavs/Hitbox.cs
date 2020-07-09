@@ -11,9 +11,9 @@ public class Hitbox : MonoBehaviour
         myMove = newMove;
     }
 
-    /* Collision method with enemy */
-    void OnTriggerEnter2D() {
-        
+    /* Method to send message to assigned move to apply affects to target
+        Pre: myMove != null && tgt != null */
+    protected void applyEffects(EntityStatus tgt) {
+        myMove.enactEffects(tgt);
     }
-
 }

@@ -17,9 +17,21 @@ public abstract class IMove
     //Calculates damage for a given move based on the official pokemon damage formula
     //  Pre: 0 < lvl <= 100, 0 < power, attDefRatio = attacker attack / victim defense
     //  Post: Returns an int representing the amount of damage applied to enemy
-    public int damageCalc(int level, int power, int entityAttack, int enemyDef) {
+    public int damageCalc(int level, int power, EntityStatus attacker, EntityStatus tgt, bool isPhysical) {
+        /* Get necessariy stats from entity*/
+        int entityAttack, enemyDef;
+
+        if (isPhysical) {
+            entityAttack = attacker.getStat((int)GeneralConstants.statIDs.ATTACK);
+            enemyDef = tgt.getStat((int)GeneralConstants.statIDs.DEFENSE);
+        }else {
+            entityAttack = attacker.getStat((int)GeneralConstants.statIDs.SP_ATTACK);
+            enemyDef = tgt.getStat((int)GeneralConstants.statIDs.SP_DEFENSE);
+        }
+
         float attDefRatio = (float)entityAttack / (float)enemyDef;
 
+        /* Calculate damage */
         float damage = (0.5f * level + 2) * power * attDefRatio * 0.06f;
         damage += 1;
         return (int)damage;

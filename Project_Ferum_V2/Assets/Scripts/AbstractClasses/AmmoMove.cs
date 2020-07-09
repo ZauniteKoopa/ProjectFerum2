@@ -39,9 +39,9 @@ public abstract class AmmoMove : IMove
         return curAmmo > 0;
     }
 
-    public void useAmmo() {
+    protected void useAmmo() {
         curAmmo--;
-        Debug.Log("Ammo Used! Ammo left: " + curAmmo);
+        //Debug.Log("Ammo Used! Ammo left: " + curAmmo);
     }
 
 }

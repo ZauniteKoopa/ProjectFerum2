@@ -32,9 +32,10 @@ public class BulletSeed : AmmoMove
             /* Get direction vector */
             Vector3 dirVect = new Vector3(hDir, vDir, 0);
 
-            /* Set properties of projectile */
+            /* Set properties of projectile and detach from parent*/
             Transform curBullet = Object.Instantiate(hitbox, myStatus.transform);
             curBullet.GetComponent<ProjectileBehav>().setProperties(this, PROJ_SPEED, dirVect);
+            curBullet.parent = null;
 
             /* Consume a bullet */
             useAmmo();
@@ -46,6 +47,7 @@ public class BulletSeed : AmmoMove
 
     /* Does damage to enemy */
     public override void enactEffects(EntityStatus tgt) {
-
+        int damage = damageCalc(myStatus.getLevel(), POWER, myStatus, tgt, true);
+        tgt.applyDamage(damage);
     }
 }

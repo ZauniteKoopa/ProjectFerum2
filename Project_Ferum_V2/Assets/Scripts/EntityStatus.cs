@@ -35,6 +35,10 @@ public class EntityStatus : MonoBehaviour
 
     /* Stat effects - to be added */
 
+
+    /* Flags */
+    private bool invincibility;
+
     /* Accessor method to level */
     public int getLevel() {
         return lvl;
@@ -70,9 +74,10 @@ public class EntityStatus : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        curHealth = maxHealth;
+        curArmor = maxArmor;
     }
 
     // Update is called once per frame
@@ -83,15 +88,32 @@ public class EntityStatus : MonoBehaviour
 
     /* Method used to apply damage to this entity
         Pre: this entity has been hit by a hostile hitbox
-        Post: this entity will now receive damage. If entity dies from move, return true. False otherwise */
+        Post: this entity will now receive damage. If entity dies from move or is invincible, return true. False otherwise */
     public bool applyDamage(int damage) {
-        curHealth -= damage;
-        curArmor -= (damage * 5) / 4;
+        if (!invincibility) {
+            StartCoroutine(invincibilityFrames());
 
-        if (curHealth <= 0) {               //Case where this entity dies from this move
-            return true;
-        }else{                              //Case where entity still lives  
-            return false;
+            curHealth -= damage;
+            curArmor -= (damage * 5) / 4;
+            Debug.Log(curHealth);
+
+            if (curHealth <= 0) {               //Case where this entity dies from this move
+                gameObject.SetActive(false);
+                return true;
+            }else{                              //Case where entity still lives  
+                return false;
+            }
         }
+
+        return true;
+    }
+
+    /* Allow for small invincibility period upon getting hit */
+    private float INVINCIBILITY_DURATION = 0.1f;
+
+    IEnumerator invincibilityFrames() {
+        invincibility = true;
+        yield return new WaitForSeconds(INVINCIBILITY_DURATION);
+        invincibility = false;
     }
 }

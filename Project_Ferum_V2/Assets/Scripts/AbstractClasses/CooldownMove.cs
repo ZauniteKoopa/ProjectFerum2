@@ -38,7 +38,7 @@ public abstract class CooldownMove : IMove
     /* Class specific method to start CD timer
         Pre: entity has started using the move
         Post: timer will start by setting isReady to false */
-    public void startCDTimer() {
+    protected void startCDTimer() {
         cdTimer = 0f;
         isReady = false;
     }

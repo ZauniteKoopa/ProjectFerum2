@@ -30,6 +30,10 @@ public class PlayerController : MonoBehaviour
         moves[0] = new BasicMeleeAttack(30, 175f, status);              // POUND
         moves[1] = new BulletSeed(status, ControlMap.ABILITY_2);        // BULLET SEED
 
+        //Hyper Voice
+        Transform hyperVoice = Resources.Load<Transform>("MoveHitboxes/HyperVoiceHitbox");
+        moves[2] = new CircleAoE(10f, true, 100, 300f, false, hyperVoice, status);
+
     }
 
     // Update is called once per frame
@@ -99,7 +103,7 @@ public class PlayerController : MonoBehaviour
         } else if (Input.GetKeyDown(ControlMap.ABILITY_2) && isMoveValid(1)) {
             StartCoroutine(executeMove(1));
         } else if (Input.GetKeyDown(ControlMap.ABILITY_3) && isMoveValid(2)) {
-            Debug.Log("Do ability 3");
+            StartCoroutine(executeMove(2));
         }
     }
 

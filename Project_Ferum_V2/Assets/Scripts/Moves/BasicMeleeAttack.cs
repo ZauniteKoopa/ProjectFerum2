@@ -25,21 +25,27 @@ public class BasicMeleeAttack : FrameMove
     private const float HITBOX_OFFSET = 0.5f;
 
     public override IEnumerator executeMovePlayer(int hDir, int vDir) {
+        /* Set hitbox's assigned move to this*/
+        hitbox.GetComponent<Hitbox>().setMove(this);
+
+        /* Reposition hitbox*/
         Vector3 dirVector = new Vector3(hDir, vDir, 0);
         dirVector.Normalize();
         dirVector *= HITBOX_OFFSET;
-
         hitbox.position += dirVector;
 
+        /* Activate hitbox*/
         hitbox.gameObject.SetActive(true);
         yield return new WaitForSeconds(0.2f);
         hitbox.gameObject.SetActive(false);
 
+        /* Reverse reposition*/
         hitbox.position -= dirVector;
     }
 
     /* Does damage to enemy */
     public override void enactEffects(EntityStatus tgt) {
-
+        int damage = damageCalc(myStatus.getLevel(), power, myStatus, tgt, true);
+        tgt.applyDamage(damage);
     }
 }
