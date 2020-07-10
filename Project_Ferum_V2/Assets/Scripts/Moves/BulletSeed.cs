@@ -5,7 +5,7 @@ using UnityEngine;
 public class BulletSeed : AmmoMove
 {
     /* In Build Move Constants for Bullet Seed */
-    private const int POWER = 17;
+    private const int POWER = 10;
     private const float PROJ_SPEED = 0.165f;
     private const float FIRE_RATE = 0.3f;
 
@@ -28,7 +28,7 @@ public class BulletSeed : AmmoMove
 
     /* Allows player to shoot */
     public override IEnumerator executeMovePlayer(int hDir, int vDir) {
-        while(Input.GetKey(input) && canRun()) {
+        while(Input.GetKey(input) && canRun() && !myStatus.armorBroke()) {
             /* Get direction vector */
             Vector3 dirVect = new Vector3(hDir, vDir, 0);
 

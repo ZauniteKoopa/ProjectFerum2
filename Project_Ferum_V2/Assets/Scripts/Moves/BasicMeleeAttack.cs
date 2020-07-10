@@ -46,6 +46,26 @@ public class BasicMeleeAttack : FrameMove
     /* Does damage to enemy */
     public override void enactEffects(EntityStatus tgt) {
         int damage = damageCalc(myStatus.getLevel(), power, myStatus, tgt, true);
-        tgt.applyDamage(damage);
+        bool applyKB = tgt.applyDamage(damage);
+
+        if (applyKB) {
+            myStatus.StartCoroutine(applyKnockback(tgt));
+        }
+    }
+
+    /* Method to apply knockback to target if applyDamage returned true (attack hit the tgt and tgt is still alive)*/
+    private float KB_DURATION = 0.125f;
+
+    IEnumerator applyKnockback(EntityStatus tgt) {
+        /* Apply knockback vector to entity */
+        Vector2 kbVector = dirKnockbackCalc(myStatus.transform.position, tgt.transform.position, knockback);
+        Rigidbody2D rb = tgt.GetComponent<Rigidbody2D>();
+        rb.AddForce(kbVector);
+
+        /* Wait for duration */
+        yield return new WaitForSeconds(KB_DURATION);
+
+        /* cancel knockback */
+        rb.velocity = Vector2.zero;
     }
 }

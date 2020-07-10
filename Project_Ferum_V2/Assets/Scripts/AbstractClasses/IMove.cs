@@ -37,6 +37,15 @@ public abstract class IMove
         return (int)damage;
     }
 
+    //Returns a vector of magnitude knockbackVal that goes from the entity to its enemy
+    //  Pre: entityPos and enemyPos are 2D transform positions, kncobackVal > 0
+    //  Post: Returns a vector of magnitude knockbackVal that points from entity to enemy
+    public Vector2 dirKnockbackCalc(Vector2 entityPos, Vector2 enemyPos, float knockbackVal) {
+        Vector2 result = new Vector2(enemyPos.x - entityPos.x, enemyPos.y - entityPos.y);
+        result.Normalize();
+        return result *= knockbackVal;
+    }
+
     //Checks IMove's movement status during player's animation
     public bool isMovementDisabled() {
         return movementDisabled;
