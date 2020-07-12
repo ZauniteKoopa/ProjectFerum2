@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EntityStatus : MonoBehaviour
 {
@@ -33,16 +34,36 @@ public class EntityStatus : MonoBehaviour
     private float curArmor = 0f;
 
     /* Moves of this entity */
+    [SerializeField]
+    private string[] moveNames = null;
     private IMove[] moves = new IMove[3];
+    [Space(20)]
 
     /* Stat effects - to be added */
 
+
+    /* Health regen variables */
+    private float hTimer = 0f;
+    private const float HP_REGEN_PERCENT = 0.02f;
+    private const float HP_REGEN_RATE = 3f;
+
+    /* Armor regen variables */
+    private float aTimer = 0f;
+    private bool underPressure;
+    private const float PRESSURE_DURATION = 5f;
 
     /* Flags */
     private bool invincibility;
     private bool movingDisabled = false;
     private bool attacking = false;
     private bool shieldStunned = false;
+    
+    /* UI Elements */
+    [Header("User Interface:")]
+    [SerializeField]
+    private Image healthBar = null;
+    [SerializeField]
+    private Image armorBar = null;
 
     //  ---------------------
     //  Accessor methods 
@@ -70,16 +91,6 @@ public class EntityStatus : MonoBehaviour
             default:
                 throw new System.Exception("Error: Invalid stat ID");
         }
-    }
-
-    /* Accessor methods to health % */
-    public float getHealthPercent() {
-        return (float)curHealth / (float)maxHealth;
-    }
-
-    /* Accessor method to armor percent */
-    public float getArmorPercent() {
-        return (float)curArmor / (float)maxArmor;
     }
 
     /* Method that checks if the player can move */
@@ -123,18 +134,46 @@ public class EntityStatus : MonoBehaviour
         maxArmor = Mathf.Max(def, sDef);
         curArmor = maxArmor;
 
-        /* Sets moves for player: TO BE MOVED ELSEWHERE */
-        moves[0] = new BasicMeleeAttack(25, 175f, this);              // POUND
-        moves[1] = new BulletSeed(this, ControlMap.ABILITY_2);        // BULLET SEED
-
-        //HYPER VOICE
-        Transform hyperVoice = Resources.Load<Transform>("MoveHitboxes/HyperVoiceHitbox");
-        moves[2] = new CircleAoE(10f, true, 100, 500f, false, hyperVoice, this);
+        /* Sets moves for this entity by looking at its moveNames */
+        for(int i = 0; i < moveNames.Length; i++) {
+            moves[i] = nameToMove(moveNames[i]);
+        }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        /* Regenerating health */
+        if(curHealth < maxHealth) {
+            //Update timer 
+            hTimer += Time.deltaTime;
+
+            if (hTimer >= HP_REGEN_RATE) {
+                /* Get some health back */
+                curHealth += (maxHealth * HP_REGEN_PERCENT);
+                if (curHealth > maxHealth)
+                    curHealth = maxHealth;
+                
+                /* Update health bar */
+                healthBar.fillAmount = curHealth / maxHealth;
+
+                /* reset timer */
+                hTimer = 0f;
+            }
+        }
+
+        /* Recovering armor */
+        if(underPressure && !shieldStunned) {
+            //Update timer 
+            aTimer += Time.deltaTime;
+
+            /* If pressure duration has passed, recover all lost armor*/
+            if(aTimer >= PRESSURE_DURATION) {
+                curArmor = maxArmor;
+                armorBar.fillAmount = 1f;
+            }
+        }
+
         /* Regenerating move CD and resources */
         for(int i = 0; i < moves.Length; i++) {
             if (moves[i] != null) {
@@ -148,20 +187,35 @@ public class EntityStatus : MonoBehaviour
         Post: this entity will now receive damage. If the player actually took damage and is still alive, return true, else return false */
     public bool applyDamage(int damage) {
         /* Only allow invincibility if target is a player */
-        if (!invincibility || transform.tag == GeneralConstants.ENEMY_TAG) {
-            StartCoroutine(invincibilityFrames());
+        if (!invincibility) {
+            /* Only allow invincibility if the unit is a player */
+            if(transform.tag == GeneralConstants.PLAYER_TAG)
+                StartCoroutine(invincibilityFrames());
 
+            /* Do damage */
             curHealth -= damage;
             curArmor -= (damage * 3) / 2;
-            Debug.Log(curHealth);
 
             if (curHealth <= 0) {               //Case where this entity dies from this move
                 gameObject.SetActive(false);
                 return false;
             }else{                              //Case where entity still lives 
+                //Update player UI Bars
+                healthBar.fillAmount = (float)curHealth / (float)maxHealth;
+                armorBar.fillAmount = (float)curArmor / (float)maxArmor;
+
+                /* Reset regen timers */
+                aTimer = 0f;
+                hTimer = 0f;
+
+                /* Puts underPressure flag to true */
+                if(!shieldStunned)
+                    underPressure = true;
+
                 //Checks if armor is shattered
                 if(curArmor <= 0 && !shieldStunned)
-                    StartCoroutine(shieldStun()); 
+                    StartCoroutine(shieldStun());
+                
                 return true;
             }
         }
@@ -179,17 +233,26 @@ public class EntityStatus : MonoBehaviour
     }
 
     /* Method for armor shattering */
-    private const float ARMOR_SHATTER_DURATION = 1.75f;
+    private const float ARMOR_SHATTER_DURATION_ENEMY = 2.5f;
+    private const float ARMOR_SHATTER_DURATION_PLAYER = 1.75f;
 
     IEnumerator shieldStun() {
         shieldStunned = true;
         movingDisabled = true;
+        underPressure = false;
         Debug.Log("Armor shattered!");
 
-        yield return new WaitForSeconds(ARMOR_SHATTER_DURATION);
+        /* Calculate armor shatter duration */
+        float curShatterDuration = (transform.tag == GeneralConstants.PLAYER_TAG) ? 
+                                    ARMOR_SHATTER_DURATION_PLAYER
+                                    : ARMOR_SHATTER_DURATION_ENEMY;
+
+        yield return new WaitForSeconds(curShatterDuration);
 
         Debug.Log("Armor Restored");
         curArmor = maxArmor;
+        armorBar.fillAmount = 1f;
+
         shieldStunned = false;
         movingDisabled = false;
     }
@@ -223,5 +286,25 @@ public class EntityStatus : MonoBehaviour
             return false;
         
         return moves[moveID] != null && !attacking && moves[moveID].canRun();
+    }
+
+    /* Move map method: converts an input string to a set move 
+        Pre: moveName must be a name of an appropriate move found in the move inventory */
+    private IMove nameToMove(string moveName) {
+        switch (moveName) {
+            case "Pound":
+                return new BasicMeleeAttack(25, 175f, this);
+            case "BulletSeed":
+                return new BulletSeed(this, ControlMap.ABILITY_2);
+            case "HyperVoice":
+                Transform hyperVoice = Resources.Load<Transform>("MoveHitboxes/HyperVoiceHitbox");
+                return new CircleAoE(10f, true, 100, 500f, false, hyperVoice, this);
+            case "None":
+                return null;
+            default:
+                throw new System.Exception("ERROR: " + moveName +" not found in move inventory");
+
+
+        }
     }
 }
