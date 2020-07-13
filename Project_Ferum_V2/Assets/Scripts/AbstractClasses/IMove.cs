@@ -51,11 +51,53 @@ public abstract class IMove
         return movementDisabled;
     }
 
+    /* Returns entity's suggested orientation given the target's position relative to entity
+        Pre: The vector2 represents the distance between tgt and entity
+        Post: returns an integer representing orientation using the following mapping
+        
+            0 or 4 -> no direction: 0
+            1 - 3 inclusive -> Right or Up direction: 1
+            5 - 7 inclusive -> left or down direction: -1 */
+    
+    private const int DEGREE_DIV = 45;
+    private const float OFFSET = 22.5f;
+
+    protected int getAttackOrientation(Vector2 dist, bool isHorizontal) {
+        //Calculate the angle of the vector 
+        float deg = Mathf.Atan2(dist.y, dist.x) * Mathf.Rad2Deg;
+        deg = (deg < 0) ? deg + 360 + OFFSET : deg + OFFSET;        //Add offset for key values to align
+        deg = (deg >= 360) ? deg - 360 : deg;
+
+        //Calculate the key value: 0 - 7
+        int keyValue = (int)(deg / DEGREE_DIV);
+        keyValue = (isHorizontal) ? (keyValue + 2) % 8 : keyValue;  //Adjust keyvalue if looking for horizontal value  
+
+        //Calculate the new attack vertical and attack horizontal orientation
+        return (keyValue % 4 == 0) ? 0 : -1 * (int)Mathf.Sign(keyValue - 4f);
+    }
+
+    /* Method that assigns appropriate hitbox tag depending on entity's tag */
+    protected string assignHitboxTag(string entityTag) {
+        if (entityTag == GeneralConstants.PLAYER_TAG)
+            return GeneralConstants.PLAYER_ATTK_TAG;
+        else
+            return GeneralConstants.ENEMY_ATTK_TAG;
+    }
+    
+
+
+    //  --------------------
+    //  Abstract methods to be implemented
+    //  --------------------
+
     /* Method that checks whether or not a move can be run or not */
     public abstract bool canRun();
 
     /* Method used to execute a move from the player's perspective */
     public abstract IEnumerator executeMovePlayer(int hDir, int vDir);
+
+    /* Method used to execute a move from an enemy's perspective */
+    public abstract IEnumerator executeMoveEnemy(Transform tgt);
 
     /* Method used to regenerate cooldowns / ammo (not used in melee attacks) */
     public abstract void regen();

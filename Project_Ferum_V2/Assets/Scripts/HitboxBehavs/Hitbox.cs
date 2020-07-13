@@ -16,4 +16,13 @@ public class Hitbox : MonoBehaviour
     protected void applyEffects(EntityStatus tgt) {
         myMove.enactEffects(tgt);
     }
+
+    /* Method used to see if you hit an enemy or not */
+    protected bool enemyHit(string tgtTag) {
+        if (tag == GeneralConstants.PLAYER_ATTK_TAG) {
+            return tgtTag == GeneralConstants.ENEMY_TAG;
+        } else {
+            return tgtTag == GeneralConstants.PLAYER_TAG;
+        }
+    }
 }

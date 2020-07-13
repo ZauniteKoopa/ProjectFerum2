@@ -258,7 +258,7 @@ public class EntityStatus : MonoBehaviour
     }
 
 
-    /* Method used to execute a certain move
+    /* Method used to execute a certain move as player
         Pre: moveID >= 0 && moveID < 3 and move is valid (not null and canRun()).
                 hDir and vDir cannot be 0 at the same time*/
     public IEnumerator executeMovePlayer(int moveID, int hDir, int vDir) {
@@ -273,6 +273,25 @@ public class EntityStatus : MonoBehaviour
         movingDisabled = shieldStunned || curMove.isMovementDisabled();
 
         yield return curMove.executeMovePlayer(hDir, vDir);
+
+        /* Set flag variables back to false */
+        movingDisabled = shieldStunned;
+        attacking = false; 
+    }
+
+    /* Method used to execute move as enemy */
+    public IEnumerator executeMoveEnemy(int moveID, Transform tgt) {
+        if((moveID < 0 || moveID >= 3) || tgt == null)
+            throw new System.Exception("Error: Invalid move ID");
+
+        /* Set attacking to true */
+        attacking = true;
+
+        /* Get necessary data from move */
+        IMove curMove = moves[moveID];
+        movingDisabled = shieldStunned || curMove.isMovementDisabled();
+
+        yield return curMove.executeMoveEnemy(tgt);
 
         /* Set flag variables back to false */
         movingDisabled = shieldStunned;

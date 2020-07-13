@@ -16,7 +16,10 @@ public class BasicMeleeAttack : FrameMove
     /* Constructor */
     public BasicMeleeAttack(int pwr, float kb, EntityStatus entity) : base(true) {
         myStatus = entity;
+
         hitbox = entity.transform.GetChild(0);
+        hitbox.tag = assignHitboxTag(entity.tag);
+
         knockback = kb;
         power = pwr;
     }
@@ -43,7 +46,18 @@ public class BasicMeleeAttack : FrameMove
         hitbox.position -= dirVector;
     }
 
-    /* Does damage to enemy */
+    /* IEnumerator that allows an enemy / AI to attack */
+    public override IEnumerator executeMoveEnemy(Transform tgt) {
+        Vector3 tgtPos = tgt.position;
+        Vector3 myPos = myStatus.transform.position;
+        Vector2 distVector = new Vector2(tgtPos.x - myPos.x, tgtPos.y - myPos.y);
+
+        int vDir = getAttackOrientation(distVector, false);
+        int hDir = getAttackOrientation(distVector, true);
+        yield return executeMovePlayer(hDir, vDir);
+    }
+
+    /* Does damage to target */
     public override void enactEffects(EntityStatus tgt) {
         int damage = damageCalc(myStatus.getLevel(), power, myStatus, tgt, true);
         bool applyKB = tgt.applyDamage(damage);

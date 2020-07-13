@@ -34,6 +34,7 @@ public class BulletSeed : AmmoMove
 
             /* Set properties of projectile and detach from parent*/
             Transform curBullet = Object.Instantiate(hitbox, myStatus.transform);
+            curBullet.tag = assignHitboxTag(myStatus.tag);
             curBullet.GetComponent<ProjectileBehav>().setProperties(this, PROJ_SPEED, dirVect);
             curBullet.parent = null;
 
@@ -43,6 +44,34 @@ public class BulletSeed : AmmoMove
             /* Wait for next chance to fire */
             yield return new WaitForSeconds(FIRE_RATE); 
         }
+    }
+
+    /* IEnumerator that allows an enemy / AI to attack */
+    private int MIN_SHOTS = 2;
+    private int MAX_SHOTS = 5;
+
+    public override IEnumerator executeMoveEnemy(Transform tgt) {
+        // calculate how many shots fired
+        int shotLimit = Random.Range(MIN_SHOTS, MAX_SHOTS + 1);
+        int curShot = 0;
+
+        while(curShot <= shotLimit && !myStatus.armorBroke()) {
+            /* Get direction vector */
+            Vector3 dirVect = tgt.position - myStatus.transform.position;
+
+            /* Set properties of projectile and detach from parent*/
+            Transform curBullet = Object.Instantiate(hitbox, myStatus.transform);
+            curBullet.tag = assignHitboxTag(myStatus.tag);
+            curBullet.GetComponent<ProjectileBehav>().setProperties(this, PROJ_SPEED, dirVect);
+            curBullet.parent = null;
+
+            /* Wait for next chance to fire */
+            yield return new WaitForSeconds(FIRE_RATE); 
+
+            /* Increment curShot counter */
+            curShot++;
+        }
+
     }
 
     /* Does damage to enemy */

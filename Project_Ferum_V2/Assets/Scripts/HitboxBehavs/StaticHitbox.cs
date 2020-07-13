@@ -7,7 +7,7 @@ public class StaticHitbox : Hitbox
     void OnTriggerEnter2D(Collider2D tgt) {
 
         /* Behavior when an enemy is hit */
-        if(tgt.tag == GeneralConstants.ENEMY_TAG) {
+        if(enemyHit(tgt.tag)) {
             EntityStatus tgtStatus = tgt.GetComponent<EntityStatus>();
             applyEffects(tgtStatus);
         }

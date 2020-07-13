@@ -1,0 +1,41 @@
+commit bd064992a5c18f1c9cb7d78370fedc566a6982e5
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Sun Jul 12 14:50:41 2020 -0500
+
+    implemented entity status UI, health / armor regen, and move inventory
+
+commit 4be6e93ed95def05e62a0e38fec8256cf9170dc4
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Fri Jul 10 14:11:18 2020 -0500
+
+    Implemented movement-speed scaling, armor, movement refactor to entity, and move knockback
+
+commit ed71b47e402875ac5d8cdde5ec7d6e7baf8c414e
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Thu Jul 9 14:30:50 2020 -0500
+
+    Finished implementing the basic 3 moves and added small window of invincibility upon getting hit
+
+commit 61033fb61b6947fc86fd606aa0d1a3d6addb3d97
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Wed Jul 8 15:16:26 2020 -0500
+
+    Set up movement-attacking interactions for player, set up a melee move and ammo move: hitboxes and movement during attacking is done for 2 moves
+
+commit 964cba8b1289901c0e381f0fd22db2d711fbf39b
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Tue Jul 7 14:19:55 2020 -0500
+
+    Set up the basis for EntityStatus and all abstract classes for moves
+
+commit af5c0cff1aff172424586b226db8fc0bfc4d9ea2
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Mon Jul 6 15:36:33 2020 -0500
+
+    Initial setup: did movement and set up IMove and EntityStatus
+
+commit 171a85af8d1bcb95802f83b51d5da5637d4d112c
+Author: Anthony Tan Hoang <46850303+ZauniteKoopa@users.noreply.github.com>
+Date:   Mon Jul 6 12:26:01 2020 -0500
+
+    Initial commit

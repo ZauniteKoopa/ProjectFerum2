@@ -23,11 +23,18 @@ public class CircleAoE : CooldownMove
     }
 
     /* Move that allows player to execute move */
-    private const float MOVE_DURATION = 0.55f;
+    private const float MOVE_DURATION = 0.2f;
 
     public override IEnumerator executeMovePlayer(int hDir, int vDir) {
+        yield return executeMoveEnemy(null);
+        startCDTimer();
+    }
+
+    /* IEnumerator that allows an enemy / AI to attack */
+    public override IEnumerator executeMoveEnemy(Transform tgt) {
         /* Set hitbox properties */
         Transform curHitbox = Object.Instantiate(hitbox, myStatus.transform);
+        curHitbox.tag = assignHitboxTag(myStatus.tag);
         curHitbox.GetComponent<Hitbox>().setMove(this);
 
         /* Duration of move */
@@ -35,7 +42,6 @@ public class CircleAoE : CooldownMove
 
         /* Destroy hitbox and Activate cooldown */
         Object.Destroy(curHitbox.gameObject);
-        startCDTimer();
     }
 
     /* Does damage to enemy */
