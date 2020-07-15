@@ -1,3 +1,9 @@
+commit 8a6f80074b841bd5e03c7acdab9f79c90e907c30
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Mon Jul 13 14:34:07 2020 -0500
+
+    Added executeEnemy methods to all moves, implemented AbstractEnemy with accompanying tgt sensor
+
 commit bd064992a5c18f1c9cb7d78370fedc566a6982e5
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Sun Jul 12 14:50:41 2020 -0500
