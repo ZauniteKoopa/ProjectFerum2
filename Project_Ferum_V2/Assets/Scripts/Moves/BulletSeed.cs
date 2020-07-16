@@ -71,7 +71,33 @@ public class BulletSeed : AmmoMove
             /* Increment curShot counter */
             curShot++;
         }
+    }
 
+    /* IEnumerator that allows player to use this move as an assist move */
+    public override IEnumerator executeAssistMove(int hDir, int vDir) {
+        // calculate how many shots fired
+        int shotLimit = Random.Range(MIN_SHOTS, MAX_SHOTS + 1);
+        int curShot = 0;
+
+        while(curShot <= shotLimit && !myStatus.armorBroke()) {
+            /* Get direction vector */
+            Vector3 dirVect = new Vector3(hDir, vDir, 0);
+
+            /* Set properties of projectile and detach from parent*/
+            Transform curBullet = Object.Instantiate(hitbox, myStatus.transform);
+            curBullet.tag = assignHitboxTag(myStatus.tag);
+            curBullet.GetComponent<ProjectileBehav>().setProperties(this, PROJ_SPEED, dirVect);
+            curBullet.parent = null;
+
+            /* Use ammo */
+            useAmmo();
+
+            /* Wait for next chance to fire */
+            yield return new WaitForSeconds(FIRE_RATE); 
+
+            /* Increment curShot counter */
+            curShot++;
+        }
     }
 
     /* Does damage to enemy */

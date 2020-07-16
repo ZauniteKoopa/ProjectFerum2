@@ -99,6 +99,9 @@ public abstract class IMove
     /* Method used to execute a move from an enemy's perspective */
     public abstract IEnumerator executeMoveEnemy(Transform tgt);
 
+    /* Method used to execute a move in the context of an assist move */
+    public abstract IEnumerator executeAssistMove(int hDir, int vDir);
+
     /* Method used to regenerate cooldowns / ammo (not used in melee attacks) */
     public abstract void regen();
 

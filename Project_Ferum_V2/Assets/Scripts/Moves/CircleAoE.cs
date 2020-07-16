@@ -8,6 +8,7 @@ public class CircleAoE : CooldownMove
     private int pwr;
     private float kb;
     private bool isPhy;
+    private const float MOVE_DURATION = 0.2f;
 
     /* Reference Variables */
     private EntityStatus myStatus;
@@ -23,8 +24,6 @@ public class CircleAoE : CooldownMove
     }
 
     /* Move that allows player to execute move */
-    private const float MOVE_DURATION = 0.2f;
-
     public override IEnumerator executeMovePlayer(int hDir, int vDir) {
         yield return executeMoveEnemy(null);
         startCDTimer();
@@ -42,6 +41,12 @@ public class CircleAoE : CooldownMove
 
         /* Destroy hitbox and Activate cooldown */
         Object.Destroy(curHitbox.gameObject);
+    }
+
+    /* Move that allows player to execute this move as an assist move */
+    public override IEnumerator executeAssistMove(int hDir, int vDir) {
+        yield return executeMoveEnemy(null);
+        startCDTimer();
     }
 
     /* Does damage to enemy */

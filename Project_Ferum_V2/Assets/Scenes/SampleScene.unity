@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 53217173}
   - component: {fileID: 53217171}
   - component: {fileID: 53217172}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fighter2
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -575,7 +575,7 @@ GameObject:
   - component: {fileID: 260075137}
   - component: {fileID: 260075141}
   - component: {fileID: 260075140}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fighter1
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -875,7 +875,7 @@ GameObject:
   - component: {fileID: 346489933}
   - component: {fileID: 346489932}
   - component: {fileID: 346489931}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fighter3
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1116,7 +1116,7 @@ GameObject:
   - component: {fileID: 537638056}
   - component: {fileID: 537638055}
   - component: {fileID: 537638054}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Enemy (1)
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -1768,7 +1768,7 @@ GameObject:
   - component: {fileID: 872713531}
   - component: {fileID: 872713532}
   - component: {fileID: 872713533}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}

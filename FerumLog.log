@@ -1,3 +1,9 @@
+commit 51466e0ef603096a6c7904ee74afe7c0eecd7251
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Wed Jul 15 15:31:49 2020 -0500
+
+    Tested movement() AbstractEnemy, moved player controller to allow control over 3 fighters, implemented very simple fighter switching, polish general UI
+
 commit 8a6f80074b841bd5e03c7acdab9f79c90e907c30
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Mon Jul 13 14:34:07 2020 -0500

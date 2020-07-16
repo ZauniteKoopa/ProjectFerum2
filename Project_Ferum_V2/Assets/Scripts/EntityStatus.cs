@@ -93,6 +93,11 @@ public class EntityStatus : MonoBehaviour
         }
     }
 
+    /* Accessor method to health */
+    public float getHealth() {
+        return curHealth;
+    }
+
     /* Method that checks if the player can move */
     public bool canMove() {
         return !movingDisabled;
@@ -296,6 +301,26 @@ public class EntityStatus : MonoBehaviour
         /* Set flag variables back to false */
         movingDisabled = shieldStunned;
         attacking = false; 
+    }
+
+    /* Method used to execute move as an assist move */
+    public IEnumerator executeAssistMove(int moveID, int hDir, int vDir) {
+        if((moveID < 0 || moveID >= 3) && (hDir != 0 || vDir != 0))
+            throw new System.Exception("Error: Invalid move ID");
+
+        /* Set attacking to true */
+        attacking = true;
+
+        /* Get necessary data from move */
+        IMove curMove = moves[moveID];
+        movingDisabled = shieldStunned || curMove.isMovementDisabled();
+
+        yield return curMove.executeAssistMove(hDir, vDir);
+
+        /* Set flag variables back to false */
+        movingDisabled = shieldStunned;
+        attacking = false; 
+
     }
 
     /* Helper method to check if move is valid

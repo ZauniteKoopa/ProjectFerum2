@@ -57,6 +57,11 @@ public class BasicMeleeAttack : FrameMove
         yield return executeMovePlayer(hDir, vDir);
     }
 
+    /* IEnumerator that allows player to use this move as an assist move */
+    public override IEnumerator executeAssistMove(int hDir, int vDir) {
+        yield return executeMovePlayer(hDir, vDir);
+    }
+
     /* Does damage to target */
     public override void enactEffects(EntityStatus tgt) {
         int damage = damageCalc(myStatus.getLevel(), power, myStatus, tgt, true);
