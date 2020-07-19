@@ -53,10 +53,11 @@ public class EntityStatus : MonoBehaviour
     private const float PRESSURE_DURATION = 5f;
 
     /* Flags */
-    private bool invincibility;
-    private bool movingDisabled = false;
-    private bool attacking = false;
-    private bool shieldStunned = false;
+    private bool invincibility = false;     //Entity ignores attacks
+    private bool movingDisabled = false;    //Entity cannot move
+    private bool attacking = false;         //Entity is in the middle of an attack
+    private bool shieldStunned = false;     //Entity is shield stunned
+    private bool assistCancelled = false;   //Entity took damage, cancelling an assistMove sequence
     
     /* UI Elements */
     [Header("User Interface:")]
@@ -64,6 +65,11 @@ public class EntityStatus : MonoBehaviour
     private Image healthBar = null;
     [SerializeField]
     private Image armorBar = null;
+    [Space(20)]
+
+    /* gameObject Controller to send message to upon death IF NECESSARY */
+    [SerializeField]
+    private GameObject controller = null;
 
     //  ---------------------
     //  Accessor methods 
@@ -127,6 +133,15 @@ public class EntityStatus : MonoBehaviour
         return (attacking) ? movement * ATTACK_MOVE_REDUCTION : movement;
     }
 
+    /* Method used to reset assist status */
+    public void resetAssistStatus() {
+        assistCancelled = false;
+    }
+
+    /* Method to check if assist is cancelled */
+    public bool isAssistCancelled() {
+        return assistCancelled;
+    }
 
     //  ---------------------
     //  Actual methods
@@ -200,9 +215,15 @@ public class EntityStatus : MonoBehaviour
             /* Do damage */
             curHealth -= damage;
             curArmor -= (damage * 3) / 2;
+            assistCancelled = true;
 
             if (curHealth <= 0) {               //Case where this entity dies from this move
-                gameObject.SetActive(false);
+                if(tag == GeneralConstants.ENEMY_TAG) {
+                    gameObject.SetActive(false);
+                } else if (tag == GeneralConstants.PLAYER_TAG){
+                    controller.SendMessage("OnDeath", this);
+                }
+                
                 return false;
             }else{                              //Case where entity still lives 
                 //Update player UI Bars
@@ -320,7 +341,6 @@ public class EntityStatus : MonoBehaviour
         /* Set flag variables back to false */
         movingDisabled = shieldStunned;
         attacking = false; 
-
     }
 
     /* Helper method to check if move is valid
@@ -330,6 +350,19 @@ public class EntityStatus : MonoBehaviour
             return false;
         
         return moves[moveID] != null && !attacking && moves[moveID].canRun();
+    }
+
+    /* Public method to execute player animation for swapping: WILL BE IN SEPERATE CLASS */
+    public IEnumerator runSwapAnimation() {
+        Color prevColor = GetComponent<SpriteRenderer>().color;
+        GetComponent<SpriteRenderer>().color = Color.magenta;
+        movingDisabled = true;
+
+        yield return new WaitForSeconds(0.35f);
+
+        GetComponent<SpriteRenderer>().color = prevColor;
+        movingDisabled = false;
+
     }
 
     /* Move map method: converts an input string to a set move 

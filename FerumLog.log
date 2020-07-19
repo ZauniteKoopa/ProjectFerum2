@@ -1,3 +1,9 @@
+commit 8c4c8fdb4898642db5492a542a72ad3a49fee028
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Thu Jul 16 14:56:38 2020 -0500
+
+    Implemented a VERY basic and simplistic version of assist moves
+
 commit 51466e0ef603096a6c7904ee74afe7c0eecd7251
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Wed Jul 15 15:31:49 2020 -0500

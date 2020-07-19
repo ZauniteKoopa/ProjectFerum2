@@ -232,6 +232,7 @@ MonoBehaviour:
   - HyperVoice
   healthBar: {fileID: 1108636227}
   armorBar: {fileID: 1824653616}
+  controller: {fileID: 768267272}
 --- !u!50 &53217172
 Rigidbody2D:
   serializedVersion: 4
@@ -712,13 +713,14 @@ MonoBehaviour:
   sAttk: 30
   sDef: 10
   speed: 30
-  maxHealth: 80
+  maxHealth: 5
   moveNames:
   - Pound
   - BulletSeed
   - HyperVoice
   healthBar: {fileID: 1108636227}
   armorBar: {fileID: 1824653616}
+  controller: {fileID: 768267272}
 --- !u!1 &272446032
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,6 +945,7 @@ MonoBehaviour:
   - HyperVoice
   healthBar: {fileID: 1108636227}
   armorBar: {fileID: 1824653616}
+  controller: {fileID: 768267272}
 --- !u!61 &346489933
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1181,6 +1184,7 @@ MonoBehaviour:
   - Pound
   healthBar: {fileID: 1734243124}
   armorBar: {fileID: 885056969}
+  controller: {fileID: 0}
 --- !u!61 &537638057
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1735,7 +1739,7 @@ MonoBehaviour:
   fighters:
   - {fileID: 260075141}
   - {fileID: 53217171}
-  - {fileID: 346489932}
+  - {fileID: 0}
 --- !u!4 &768267274
 Transform:
   m_ObjectHideFlags: 0
@@ -1891,6 +1895,7 @@ MonoBehaviour:
   - Pound
   healthBar: {fileID: 1388569904}
   armorBar: {fileID: 2135791566}
+  controller: {fileID: 0}
 --- !u!50 &872713532
 Rigidbody2D:
   serializedVersion: 4
