@@ -18,8 +18,11 @@ public class PlayerController : MonoBehaviour
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
     private const float ASSIST_MOVE_LINGER_TIME = 5f;
-    private bool assistMoveSeq = false;
-    private EntityStatus curAssist = null;
+    private const float MAX_ASSIST_SEQ_DURATION = 2.5f;
+    private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
+    private EntityStatus curAssist = null;              //The current assist fighter
+    private int prevMainIndex = -1;                     //Previous main index during assistMoveSequence
+    private bool assistDeath;                           //Flag to check if the assist fighter dies
 
     /* Flags */
     private bool dying = false;     //If the main party member is in the middle of dying
@@ -156,27 +159,29 @@ public class PlayerController : MonoBehaviour
 
         /* Set up boolean flags for this controller */
         assistMoveSeq = true;
+        assistDeath = false;
         
         /* Get fighter to do assist move */
         int assistIndex = getNextFighter(swapRight);
         curAssist = fighters[assistIndex];
         curAssist.resetAssistStatus();
+        fighters[mainIndex].resetAssistStatus();
 
         /* Change main index and assist index, detach curAssist, and get rid of loop */
-        int prevMainIndex = mainIndex;
+        prevMainIndex = mainIndex;
         mainIndex = assistIndex;
 
         curAssist.gameObject.SetActive(true);
         curAssist.transform.parent = null;
-        //curAssist.transform.position = transform.position;
         numLiving--;
         int abilityUsed = -1;       //If this number is still -1, no ability used
-
+        int prevLiving = numLiving;
+        float assistSeqTimer = 0f;
         Time.timeScale = ASSIST_MOVE_SLOW;
 
 
-        /* Wait until player releases c/v button or takes damage / uses an ability*/
-        while(holdingAssistKey() && abilityUsed == -1 && !curAssist.isAssistCancelled()) {
+        /* Wait until player releases c/v button or takes damage or uses an ability or runs out of time */
+        while(holdingAssistKey() && abilityUsed == -1 && enemyNotHitAssist(prevLiving) && assistSeqTimer < MAX_ASSIST_SEQ_DURATION) {
             /* Doing your main selected fighter's 3 abilities */
             if (Input.GetKeyDown(ControlMap.ABILITY_1) && fighters[mainIndex].canUseMove(0)) {
                 abilityUsed = 0;
@@ -185,20 +190,22 @@ public class PlayerController : MonoBehaviour
             } else if (Input.GetKeyDown(ControlMap.ABILITY_3) && fighters[mainIndex].canUseMove(2)) {
                 abilityUsed = 2;
             }
-
+            
             yield return new WaitForSecondsRealtime(0.01f);
+            assistSeqTimer += 0.01f;
         }
 
         //If an ability is used or curAssist was damaged, have the assist linger
-        bool linger = abilityUsed != -1 || curAssist.isAssistCancelled();
+        bool linger = abilityUsed != -1 || !enemyNotHitAssist(prevLiving) || assistSeqTimer >= MAX_ASSIST_SEQ_DURATION;
 
         /* Shift control back to main fighter and revert timescale to normal. Disable assist */
         mainIndex = prevMainIndex;
+        prevMainIndex = -1;
         Time.timeScale = 1.0f;
         assistMoveSeq = false;
 
         /* In the case where you do linger */
-        if (linger) {
+        if (linger && !assistDeath) {
             /* Disable fighter in fighters array */
             fighters[assistIndex] = null;
 
@@ -207,16 +214,14 @@ public class PlayerController : MonoBehaviour
                 yield return curAssist.executeAssistMove(abilityUsed, hDir, vDir);
 
             /* Have assist linger before going back */
-            yield return new WaitForSeconds(ASSIST_MOVE_LINGER_TIME);
-            fighters[assistIndex] = curAssist;
+            yield return lingering(); 
         }
 
-        /* Disable assist fighter */
-        curAssist.transform.parent = transform;
-        curAssist.transform.localPosition = Vector3.zero;
-        curAssist.gameObject.SetActive(false);
-        curAssist = null;
-        numLiving++;
+        /* Check for assistDeath to decide what to do with assistFighter after sequence */
+        if (assistDeath)
+            destroyAssistFighter(assistIndex);
+        else
+            disableAssistFighter(assistIndex);
     }
 
     /* Private method for finding the next fighter to swap to or do an assist move
@@ -242,13 +247,70 @@ public class PlayerController : MonoBehaviour
         return newIndex;
     }
 
+
+
     // --------------------
     // Assist move helper methods
     // --------------------
 
+    //IEnumerator to execute lingering
+    private IEnumerator lingering() {
+        float lingerTime = 0f;
+
+        while(lingerTime <= ASSIST_MOVE_LINGER_TIME && !assistDeath) {
+            yield return new WaitForSeconds(0.01f);
+            lingerTime += 0.01f;
+        }
+    }
+
+    //Gets rid of assistFighter's corpse if an assistFighter dies during assistMove
+    //  Pre: assistFighter is considered dead
+    private void destroyAssistFighter(int assistIndex) {
+        Debug.Assert(assistDeath);
+        Debug.Assert(assistIndex >= 0 && assistIndex < 3);
+
+        //Clear assistFighter out
+        curAssist.transform.parent = transform;
+        curAssist.transform.localPosition = Vector3.zero;
+        curAssist.gameObject.SetActive(false);
+        curAssist = null;
+
+        if(numLiving <= 0) {
+            dying = true;
+            Debug.Log("gameOver");
+        }
+    }
+
+    //Method meant to disable assist fighter after an assist move
+    //  Pre: assistFighter must still be considered living
+    private void disableAssistFighter(int assistIndex) {
+        Debug.Assert(!assistDeath);
+        Debug.Assert(assistIndex >= 0 && assistIndex < 3);
+
+        curAssist.transform.parent = transform;
+        curAssist.transform.localPosition = Vector3.zero;
+        curAssist.gameObject.SetActive(false);
+        fighters[assistIndex] = curAssist;
+        curAssist = null;
+        
+        numLiving++;
+    }
+
+    //Method to check if player is holding assist key
     private bool holdingAssistKey() {
         return Input.GetKey(ControlMap.ASSIST_MOVE_LEFT) || Input.GetKey(ControlMap.ASSIST_MOVE_RIGHT);
     }
+
+    //Method to check if an enemy has interrupted an assist move 
+    private bool enemyNotHitAssist(int prevLiving) {
+        //Checks for the death case 
+        if(numLiving < prevLiving)
+            return false;
+
+        return !curAssist.isAssistCancelled() && !fighters[mainIndex].isAssistCancelled();
+    }
+
+
 
     //Death Method: Played when one of the 3 members dies
     //  Pre: either the mainFighter or the assistFighter dies with numLiving >= 0
@@ -256,9 +318,9 @@ public class PlayerController : MonoBehaviour
     //        If fighter is available, swap to available fighter
     //        If assistFighter is available, wait until assistFighter finished with assistMove and then swap
     public IEnumerator OnDeath(EntityStatus corpse) {
-        numLiving--;
 
-        if(corpse == fighters[mainIndex]) {         //Case where the corpse is the main fighter
+        if(corpse == fighters[mainIndex] && curAssist == null) {    //Case where the corpse is the main fighter NOT ASSIST FIGHTER
+            numLiving--;
 
             dying = true;
             fighters[mainIndex].gameObject.SetActive(false);
@@ -284,11 +346,25 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-        }else if(corpse == curAssist) {             //Case where the corpse is the assist fighter
-            Debug.Log("Assist Fighter died WHAT DO WE DO??????????");
-        }
+        }else if(corpse == curAssist) {                         //Case where the corpse is the assist fighter
+            assistDeath = true;
+        }else if (prevMainIndex != -1) {                        //Case during assist move sequence where main fighter dies
+            numLiving--;
 
-        dying = false;
+            dying = true;
+            fighters[prevMainIndex].gameObject.SetActive(false);
+            fighters[prevMainIndex] = null;
+
+            while (curAssist != null)
+                yield return 0;
+            
+            if (numLiving > 0) {
+                yield return OnDeathSwap();
+                dying = false;
+            }else {
+                Debug.Log("gameOver!");
+            }
+        }
     }
 
     //Private IEnumerator that does the OnDeath swapping

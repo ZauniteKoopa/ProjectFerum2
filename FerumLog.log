@@ -1,3 +1,9 @@
+commit ffa589dd0b6b951512c96cddb59743279d6e05fa
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Sun Jul 19 14:22:31 2020 -0500
+
+    Added assistmove cancel on enemy hit, small animation when swapping, and deaths concerning only main fighter
+
 commit 8c4c8fdb4898642db5492a542a72ad3a49fee028
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Thu Jul 16 14:56:38 2020 -0500
