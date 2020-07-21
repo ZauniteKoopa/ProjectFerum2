@@ -27,6 +27,10 @@ public class PlayerController : MonoBehaviour
     /* Flags */
     private bool dying = false;     //If the main party member is in the middle of dying
 
+    /* UI Variables to update */
+    [SerializeField]
+    private UIResources[] UIStats = new UIResources[3];
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -35,12 +39,16 @@ public class PlayerController : MonoBehaviour
             if (i >= MAX_NUM_FIGHTERS)
                 throw new System.Exception("ERROR: Too many slots in fighters on this player controller");
             
-            if (fighters[i] != null)
+            if (fighters[i] != null) {
                 numLiving++;
+                fighters[i].initializeEntity();
+            }
         }
 
         if(numLiving == 0)
             throw new System.Exception("ERROR: Player controller has no fighters initially");
+            
+        rotateFighterUI();
     }
 
     // Update is called once per frame
@@ -52,6 +60,15 @@ public class PlayerController : MonoBehaviour
 
             if (!assistMoveSeq)
                 attack();
+        }
+
+        /* Update ability UI regarding player */
+        for(int i = 0; i < UIStats.Length; i++) {
+            //Get a mapping from fighter to UI resources
+            int assignedUI = (i - mainIndex + 3) % 3;
+
+            if (fighters[i] != null)
+                fighters[i].playerRegen(UIStats[assignedUI].abilities);
         }
     }
 
@@ -148,6 +165,7 @@ public class PlayerController : MonoBehaviour
 
         /* Update main Index */
         mainIndex = newIndex;
+        rotateFighterUI();
         StartCoroutine(fighters[mainIndex].runSwapAnimation());
     }
 
@@ -174,6 +192,8 @@ public class PlayerController : MonoBehaviour
         curAssist.gameObject.SetActive(true);
         curAssist.transform.parent = null;
         numLiving--;
+        rotateFighterUI();
+
         int abilityUsed = -1;       //If this number is still -1, no ability used
         int prevLiving = numLiving;
         float assistSeqTimer = 0f;
@@ -203,6 +223,7 @@ public class PlayerController : MonoBehaviour
         prevMainIndex = -1;
         Time.timeScale = 1.0f;
         assistMoveSeq = false;
+        rotateFighterUI();
 
         /* In the case where you do linger */
         if (linger && !assistDeath) {
@@ -247,6 +268,22 @@ public class PlayerController : MonoBehaviour
         return newIndex;
     }
 
+
+    /* Helper method meant to "rotate" fighter UI so that they align with appropriate fighter */
+    private void rotateFighterUI() {
+
+        for(int i = 0; i < fighters.Length; i++) {
+            //Get a mapping from fighter to UI resources
+            int assignedUI = (i - mainIndex + 3) % 3;
+
+            if (fighters[i] != null) {
+                fighters[i].setUpUI(UIStats[assignedUI]);
+            } else {
+                UIStats[assignedUI].setDead();
+            }
+
+        }
+    }
 
 
     // --------------------

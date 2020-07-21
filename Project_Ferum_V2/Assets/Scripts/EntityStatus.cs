@@ -147,8 +147,8 @@ public class EntityStatus : MonoBehaviour
     //  Actual methods
     //  ---------------------
 
-    // Start is called before the first frame update
-    void Awake()
+    // Initilizes entity status: called in playerController or abstractEnemy Awake function
+    public void initializeEntity()
     {
         curHealth = maxHealth;
         maxArmor = Mathf.Max(def, sDef);
@@ -160,9 +160,8 @@ public class EntityStatus : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
+    // Regenerates health and armor bars
+    public void regenBars() {
         /* Regenerating health */
         if(curHealth < maxHealth) {
             //Update timer 
@@ -191,13 +190,6 @@ public class EntityStatus : MonoBehaviour
             if(aTimer >= PRESSURE_DURATION) {
                 curArmor = maxArmor;
                 armorBar.fillAmount = 1f;
-            }
-        }
-
-        /* Regenerating move CD and resources */
-        for(int i = 0; i < moves.Length; i++) {
-            if (moves[i] != null) {
-                moves[i].regen();
             }
         }
     }
@@ -382,6 +374,58 @@ public class EntityStatus : MonoBehaviour
                 throw new System.Exception("ERROR: " + moveName +" not found in move inventory");
 
 
+        }
+    }
+
+
+    //  ---------------------
+    //  UI Methods and move regeneration regarding player only
+    //  ---------------------
+
+    /* Method used to update UI abilities / moves
+        Pre: The array sent in MUST be of size 3 and all filled
+        Post: UI abilities will now be updated */
+    public void playerRegen(UIAbility[] abilities) {
+        Debug.Assert(abilities.Length == 3);
+
+        /* Regenerate bars */
+        regenBars();
+
+        /* Regenerating move CD and resources */
+        for(int i = 0; i < abilities.Length; i++) {
+            Debug.Assert(abilities[i] != null);
+            
+            if (moves[i] != null) {
+                moves[i].regen();
+                moves[i].updateMoveUI(abilities[i]);
+            }
+        }
+    }
+
+    /* Method used to set up UI with their abilities
+        Pre: array part of UI resources MUST be size 3, nothing is null
+        Post: This entity will now be assigned this Resources UI */
+    public void setUpUI(UIResources resources) {
+        Debug.Assert(resources.abilities.Length == 3);
+        Debug.Assert(resources.healthBar != null);
+        Debug.Assert(resources.armorBar != null);
+
+        /* Set up healthBars and armorBars */
+        healthBar = resources.healthBar;
+        armorBar = resources.armorBar;
+
+        /* Update bars */
+        healthBar.fillAmount = (float)curHealth / (float)maxHealth;
+        armorBar.fillAmount = (float)curArmor / (float)maxArmor;
+
+        /* Set up abilities */
+        for(int i = 0; i < resources.abilities.Length; i++) {
+            Debug.Assert(resources.abilities[i] != null);
+
+            if (moves[i] != null)
+                moves[i].setUpUI(resources.abilities[i]);
+            else
+                resources.abilities[i].setNone();
         }
     }
 }

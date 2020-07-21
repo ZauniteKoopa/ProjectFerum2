@@ -1,3 +1,9 @@
+commit 37a3e5b543415730928ac1a9dcd6ed05025372e9
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Mon Jul 20 14:11:05 2020 -0500
+
+    Completed basic functionality of deaths for assistFighter and mainFighter, added timer on assist move sequences
+
 commit ffa589dd0b6b951512c96cddb59743279d6e05fa
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Sun Jul 19 14:22:31 2020 -0500

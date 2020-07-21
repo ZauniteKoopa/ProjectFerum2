@@ -109,4 +109,10 @@ public abstract class IMove
         Pre: hitbox associated with move has hit its associated target
         Post: Target will now receive the move's effects */
     public abstract void enactEffects(EntityStatus tgt);
+
+    /* Method to update abilityUI of a move */
+    public abstract void updateMoveUI(UIAbility icon);
+
+    /* Method to initialize UI of a move*/
+    public abstract void setUpUI(UIAbility icon);
 }

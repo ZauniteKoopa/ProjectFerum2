@@ -21,6 +21,7 @@ public abstract class AbstractEnemy : MonoBehaviour
     void Awake()
     {
         status = GetComponent<EntityStatus>();
+        status.initializeEntity();
         attackTimer = 0f;
         canAttack = false;
     }
@@ -28,6 +29,8 @@ public abstract class AbstractEnemy : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        status.regenBars();
+
         if (status.canMove()) {
             movement();
 

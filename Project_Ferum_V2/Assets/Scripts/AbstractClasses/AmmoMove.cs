@@ -39,6 +39,18 @@ public abstract class AmmoMove : IMove
         return curAmmo > 0;
     }
 
+    /* Method to update UI */
+    public override void updateMoveUI(UIAbility icon) {
+        icon.setAmmo(curAmmo);
+    }
+
+    /* Method to set up UI */
+    public override void setUpUI(UIAbility icon) {
+        icon.setCooldownUI(1f);
+        icon.setAmmo(curAmmo);
+    }
+
+    /* Use one ammo */
     protected void useAmmo() {
         curAmmo--;
         //Debug.Log("Ammo Used! Ammo left: " + curAmmo);

@@ -35,6 +35,18 @@ public abstract class CooldownMove : IMove
         return isReady;
     }
 
+    /* Method to update UI */
+    public override void updateMoveUI(UIAbility icon) {
+        float fill = (isReady) ? 1f : cdTimer / maxCooldown;
+        icon.setCooldownUI(fill);
+    }
+
+    /* Method to set up UI */
+    public override void setUpUI(UIAbility icon) {
+        icon.clearAmmo();
+        updateMoveUI(icon);
+    }
+
     /* Class specific method to start CD timer
         Pre: entity has started using the move
         Post: timer will start by setting isReady to false */

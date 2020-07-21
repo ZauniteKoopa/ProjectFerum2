@@ -14,4 +14,13 @@ public abstract class FrameMove : IMove
     public override bool canRun() {
         return true;
     }
+
+    /* Method to update UI */
+    public override void updateMoveUI(UIAbility icon) {}
+
+    /* Method to set up UI */
+    public override void setUpUI(UIAbility icon) {
+        icon.setCooldownUI(1f);
+        icon.clearAmmo();
+    }
 }
