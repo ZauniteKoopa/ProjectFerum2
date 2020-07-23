@@ -420,8 +420,6 @@ public class EntityStatus : MonoBehaviour
 
         /* Set up abilities */
         for(int i = 0; i < resources.abilities.Length; i++) {
-            Debug.Assert(resources.abilities[i] != null);
-
             if (moves[i] != null)
                 moves[i].setUpUI(resources.abilities[i]);
             else

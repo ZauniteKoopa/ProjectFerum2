@@ -22,4 +22,11 @@ public class UIResources : MonoBehaviour
             abilities[i].setNone();
         }
     }
+
+    //Disable UI Resources when not being used
+    public void enableUI() {
+        gameObject.SetActive(true);
+    }
+
+
 }

@@ -8,6 +8,9 @@ public class PlayerController : MonoBehaviour
     private int hDir = 1;
     private int vDir = 0;
 
+    /* Variable to help with swapping teammates */
+    private int initialNumFighters;
+
     /* Reference variable to entity associated with this controller (TO BE DELETED)*/
     private const int MAX_NUM_FIGHTERS = 3;
     [SerializeField]
@@ -17,9 +20,11 @@ public class PlayerController : MonoBehaviour
 
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
-    private const float ASSIST_MOVE_LINGER_TIME = 5f;
-    private const float MAX_ASSIST_SEQ_DURATION = 2.5f;
+    private const float ASSIST_MOVE_LINGER_TIME = 2f;
+    private const float MAX_ASSIST_SEQ_DURATION = 3f;
+    private const float ENEMY_LINGER_REDUCTION = 0.4f;
     private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
+    private int assistIndex = -1;                       //Index of assist fighter before doing assistMoves
     private EntityStatus curAssist = null;              //The current assist fighter
     private int prevMainIndex = -1;                     //Previous main index during assistMoveSequence
     private bool assistDeath;                           //Flag to check if the assist fighter dies
@@ -32,22 +37,32 @@ public class PlayerController : MonoBehaviour
     private UIResources[] UIStats = new UIResources[3];
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
-        /* Count how many ,living fighters at the start of the game */
+        bool hitNull = false;
+
+        /* Count how many ,living fighters at the start of the game: THERE SHOULD BE NO NULL IN-BETWEEN FIGHTERS INITIALLY */
         for(int i = 0; i < fighters.Length; i++) {
             if (i >= MAX_NUM_FIGHTERS)
                 throw new System.Exception("ERROR: Too many slots in fighters on this player controller");
             
             if (fighters[i] != null) {
+                //Checks for errors
+                if (hitNull)
+                    throw new System.Exception("ERROR: null in between fighters in fighters array");
+                
                 numLiving++;
                 fighters[i].initializeEntity();
+                UIStats[i].enableUI();
+            } else {
+                hitNull = true;
             }
         }
 
         if(numLiving == 0)
             throw new System.Exception("ERROR: Player controller has no fighters initially");
-            
+        
+        initialNumFighters = numLiving;
         rotateFighterUI();
     }
 
@@ -65,10 +80,16 @@ public class PlayerController : MonoBehaviour
         /* Update ability UI regarding player */
         for(int i = 0; i < UIStats.Length; i++) {
             //Get a mapping from fighter to UI resources
-            int assignedUI = (i - mainIndex + 3) % 3;
+            int assignedUI = (i - mainIndex + initialNumFighters) % initialNumFighters;
 
             if (fighters[i] != null)
                 fighters[i].playerRegen(UIStats[assignedUI].abilities);
+        }
+
+        /* Update ability UI for assistFighter */
+        if (curAssist != null) {
+            int assignedUI = (assistIndex - mainIndex + 3) % 3;
+            curAssist.playerRegen(UIStats[assignedUI].abilities);
         }
     }
 
@@ -180,7 +201,7 @@ public class PlayerController : MonoBehaviour
         assistDeath = false;
         
         /* Get fighter to do assist move */
-        int assistIndex = getNextFighter(swapRight);
+        assistIndex = getNextFighter(swapRight);
         curAssist = fighters[assistIndex];
         curAssist.resetAssistStatus();
         fighters[mainIndex].resetAssistStatus();
@@ -272,9 +293,9 @@ public class PlayerController : MonoBehaviour
     /* Helper method meant to "rotate" fighter UI so that they align with appropriate fighter */
     private void rotateFighterUI() {
 
-        for(int i = 0; i < fighters.Length; i++) {
+        for(int i = 0; i < initialNumFighters; i++) {
             //Get a mapping from fighter to UI resources
-            int assignedUI = (i - mainIndex + 3) % 3;
+            int assignedUI = (i - mainIndex + initialNumFighters) % initialNumFighters;
 
             if (fighters[i] != null) {
                 fighters[i].setUpUI(UIStats[assignedUI]);
@@ -293,10 +314,20 @@ public class PlayerController : MonoBehaviour
     //IEnumerator to execute lingering
     private IEnumerator lingering() {
         float lingerTime = 0f;
+        curAssist.resetAssistStatus();
 
         while(lingerTime <= ASSIST_MOVE_LINGER_TIME && !assistDeath) {
             yield return new WaitForSeconds(0.01f);
             lingerTime += 0.01f;
+
+            //If enemy hits assist, extend linger by ENEMY_LINGER_REDUCTION seconds (2 sec is max)
+            if (curAssist.isAssistCancelled()) {
+                float newLinger = lingerTime - ENEMY_LINGER_REDUCTION;
+                lingerTime = (newLinger >= 0f) ? newLinger : 0f;
+
+                Debug.Log("welp");
+                curAssist.resetAssistStatus(); 
+            }
         }
     }
 
@@ -419,6 +450,7 @@ public class PlayerController : MonoBehaviour
         int newIndex = getNextFighter(true);
         fighters[newIndex].gameObject.SetActive(true);
         mainIndex = newIndex;
+        rotateFighterUI();
 
         yield return fighters[mainIndex].runSwapAnimation();
     }
