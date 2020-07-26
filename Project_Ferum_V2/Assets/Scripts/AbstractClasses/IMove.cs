@@ -83,7 +83,18 @@ public abstract class IMove
         else
             return GeneralConstants.ENEMY_ATTK_TAG;
     }
-    
+
+    /* Method to check what input was used for this move */
+    protected string getInputKey() {
+        if (Input.GetKey(ControlMap.ABILITY_1))
+            return ControlMap.ABILITY_1;
+        else if (Input.GetKey(ControlMap.ABILITY_2))
+            return ControlMap.ABILITY_2;
+        else if (Input.GetKey(ControlMap.ABILITY_3))
+            return ControlMap.ABILITY_3;
+        else
+            return "";
+    }
 
 
     //  --------------------

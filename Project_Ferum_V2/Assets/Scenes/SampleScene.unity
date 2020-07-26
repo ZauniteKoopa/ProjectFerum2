@@ -1562,13 +1562,13 @@ MonoBehaviour:
   lvl: 10
   attk: 45
   def: 25
-  sAttk: 30
+  sAttk: 40
   sDef: 10
   speed: 30
   maxHealth: 80
   moveNames:
   - Pound
-  - BulletSeed
+  - FlameBurst
   - HyperVoice
   healthBar: {fileID: 1108636227}
   armorBar: {fileID: 1824653616}
@@ -3280,7 +3280,7 @@ MonoBehaviour:
   fighters:
   - {fileID: 260075141}
   - {fileID: 53217171}
-  - {fileID: 0}
+  - {fileID: 346489932}
   UIStats:
   - {fileID: 877149402}
   - {fileID: 104405418}

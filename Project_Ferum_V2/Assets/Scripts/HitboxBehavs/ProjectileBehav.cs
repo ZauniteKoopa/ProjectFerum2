@@ -6,21 +6,28 @@ public class ProjectileBehav : Hitbox
 {
     //speed of the projectile per frame
     private Vector3 speedVector;
+    [SerializeField]
+    private float projSpeed = 0f;
 
     //Time out variables
     private const float TIMEOUT = 6f;
     private float timer = 0f;
 
     /* Sets properties of this projectile */
-    public void setProperties(IMove move, float speed, Vector3 vect) {
+    public void setProperties(IMove move, Vector3 vect) {
         vect.Normalize();
 
         setMove(move);
-        speedVector = speed * vect;
+        speedVector = projSpeed * vect;
     }
 
     /* Fixed update */
     void FixedUpdate() {
+        moveProjectile();
+    }
+
+    //Moves projectile
+    protected void moveProjectile() {
         transform.position += speedVector;
 
         /* Update timer */

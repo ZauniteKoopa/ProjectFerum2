@@ -364,10 +364,12 @@ public class EntityStatus : MonoBehaviour
             case "Pound":
                 return new BasicMeleeAttack(25, 175f, this);
             case "BulletSeed":
-                return new BulletSeed(this, ControlMap.ABILITY_2);
+                return new BulletMove(this, 10, 20, 1.5f, 0.3f, true, "MoveHitboxes/Bullet");
             case "HyperVoice":
                 Transform hyperVoice = Resources.Load<Transform>("MoveHitboxes/HyperVoiceHitbox");
                 return new CircleAoE(10f, true, 100, 500f, false, hyperVoice, this);
+            case "FlameBurst":
+                return new BulletMove(this, 20, 12, 2.5f, 0.45f, false, "MoveHitboxes/BurstProj");
             case "None":
                 return null;
             default:
