@@ -72,7 +72,7 @@ public class EntityStatus : MonoBehaviour
     private GameObject controller = null;
 
     //  ---------------------
-    //  Accessor methods 
+    //  Accessor and mutator methods 
     //  ---------------------
 
     /* Accessor method to level */
@@ -369,7 +369,12 @@ public class EntityStatus : MonoBehaviour
                 Transform hyperVoice = Resources.Load<Transform>("MoveHitboxes/HyperVoiceHitbox");
                 return new CircleAoE(10f, true, 100, 500f, false, hyperVoice, this);
             case "FlameBurst":
-                return new BulletMove(this, 20, 12, 2.5f, 0.45f, false, "MoveHitboxes/BurstProj");
+                return new BulletMove(this, 20, 12, 2.5f, 0.5f, false, "MoveHitboxes/BurstProj");
+            case "AquaTail":
+                Transform hitbox = Resources.Load<Transform>("MoveHitboxes/AquaTailHitbox");
+                return new CircleAoE(3.5f, false, 40, 200f, true, hitbox, this);
+            case "QuickAttack":
+                return new DashMove(this, 15, 4, 1.25f, 650f, 0.15f);
             case "None":
                 return null;
             default:

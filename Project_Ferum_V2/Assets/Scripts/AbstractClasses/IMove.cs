@@ -46,6 +46,13 @@ public abstract class IMove
         return result *= knockbackVal;
     }
 
+    //Vector3 version of dirKnockbackCalc
+    public Vector3 dirKnockbackCalc3(Vector3 entityPos, Vector3 enemyPos, float knockbackVal) {
+        Vector3 result = enemyPos - entityPos;
+        result.Normalize();
+        return result *= knockbackVal;
+    }
+
     //Checks IMove's movement status during player's animation
     public bool isMovementDisabled() {
         return movementDisabled;

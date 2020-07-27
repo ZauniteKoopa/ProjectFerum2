@@ -35,6 +35,7 @@ public class CircleAoE : CooldownMove
         Transform curHitbox = Object.Instantiate(hitbox, myStatus.transform);
         curHitbox.tag = assignHitboxTag(myStatus.tag);
         curHitbox.GetComponent<Hitbox>().setMove(this);
+        curHitbox.GetComponent<StaticHitbox>().resetHitbox();
 
         /* Duration of move */
         yield return new WaitForSeconds(MOVE_DURATION);

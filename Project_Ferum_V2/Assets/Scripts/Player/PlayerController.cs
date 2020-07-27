@@ -91,6 +91,12 @@ public class PlayerController : MonoBehaviour
             int assignedUI = (assistIndex - mainIndex + 3) % 3;
             curAssist.playerRegen(UIStats[assignedUI].abilities);
         }
+
+        /* Camera always focused on for mainFighter */
+        if (!assistMoveSeq && !dying) {
+            transform.position += fighters[mainIndex].transform.localPosition;
+            fighters[mainIndex].transform.localPosition = Vector3.zero;
+        }
     }
 
     /* Movement helper method for FixedUpdate(): Allows player to move
@@ -125,12 +131,6 @@ public class PlayerController : MonoBehaviour
 
         /* Move the fighter first and then move the overall controller transform to fighter's position (if controlling mian fighter)*/
         fighters[mainIndex].transform.position += moveDir * curSpeed;
-        if (!assistMoveSeq) {
-            transform.position += fighters[mainIndex].transform.localPosition;
-
-            /* Reset fighter's local position to avoid continous movement */
-            fighters[mainIndex].transform.localPosition = Vector3.zero;
-        }
 
         /* If player didn't move, go back to previous dir values */
         if(hDir == 0 && hDir == vDir) {

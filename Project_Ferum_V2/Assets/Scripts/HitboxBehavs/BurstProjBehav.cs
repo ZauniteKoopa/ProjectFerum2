@@ -33,7 +33,6 @@ public class BurstProjBehav : ProjectileBehav
     // Method called when collides with either an enemy or a wall
     void OnTriggerEnter2D(Collider2D tgt) {
         /* Behavior when an enemy is hit */
-        Debug.Log("child");
         if(enemyHit(tgt.tag)) {
             hit.Add(tgt);
             EntityStatus tgtStatus = tgt.GetComponent<EntityStatus>();

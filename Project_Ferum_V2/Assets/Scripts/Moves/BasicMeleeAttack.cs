@@ -30,6 +30,7 @@ public class BasicMeleeAttack : FrameMove
     public override IEnumerator executeMovePlayer(int hDir, int vDir) {
         /* Set hitbox's assigned move to this*/
         hitbox.GetComponent<Hitbox>().setMove(this);
+        hitbox.GetComponent<StaticHitbox>().resetHitbox();
 
         /* Reposition hitbox*/
         Vector3 dirVector = new Vector3(hDir, vDir, 0);

@@ -1,0 +1,47 @@
+[33mcommit ae6558f03ce0b96bbdd10bbe8f17727291be931d[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Sun Jul 26 16:00:31 2020 -0500
+
+    Generalized BulletSeed.cs --> BulletMove.cs, created new hitbox leading to the creation of the flame burst move
+
+[33mcommit 1192abba8088d6bfcb338b50e103f81bbc258f31[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Thu Jul 23 11:27:02 2020 -0500
+
+    Polished fighter-swapping UI for player
+
+[33mcommit 933945d045c5035bbab862fbdf7231b7d2f3a6bb[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Tue Jul 21 15:21:16 2020 -0500
+
+    Added basic UI methods for the player and got rid of Awake() and Update() methods from entity class
+
+[33mcommit 37a3e5b543415730928ac1a9dcd6ed05025372e9[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Mon Jul 20 14:11:05 2020 -0500
+
+    Completed basic functionality of deaths for assistFighter and mainFighter, added timer on assist move sequences
+
+[33mcommit ffa589dd0b6b951512c96cddb59743279d6e05fa[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Sun Jul 19 14:22:31 2020 -0500
+
+    Added assistmove cancel on enemy hit, small animation when swapping, and deaths concerning only main fighter
+
+[33mcommit 8c4c8fdb4898642db5492a542a72ad3a49fee028[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Thu Jul 16 14:56:38 2020 -0500
+
+    Implemented a VERY basic and simplistic version of assist moves
+
+[33mcommit 51466e0ef603096a6c7904ee74afe7c0eecd7251[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Wed Jul 15 15:31:49 2020 -0500
+
+    Tested movement() AbstractEnemy, moved player controller to allow control over 3 fighters, implemented very simple fighter switching, polish general UI
+
+[33mcommit 8a6f80074b841bd5e03c7acdab9f79c90e907c30[m
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Mon Jul 13 14:34:07 2020 -0500
+
+    Added executeEnemy methods to all moves, implemented AbstractEnemy with accompanying tgt sensor
