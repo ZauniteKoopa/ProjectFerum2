@@ -50,5 +50,10 @@ public class ProjectileBehav : Hitbox
         if(tgt.tag == GeneralConstants.WALL_TAG) {
             Destroy(gameObject);
         }
+
+        /* Behavior when hitting another attack */
+        if (hitAttack(tgt) && overpoweredBy(tgt.GetComponent<Hitbox>())) {
+            Destroy(gameObject);
+        }
     }
 }

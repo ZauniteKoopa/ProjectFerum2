@@ -79,9 +79,10 @@ public class BulletMove : AmmoMove
 
     public override IEnumerator executeAssistMove(int hDir, int vDir) {
         // calculate how many shots fired
+        string input = getAssistInputKey();
         int curShot = 0;
 
-        while(curShot < ASSIST_SHOTS && !myStatus.armorBroke()) {
+        while(canRun() && Input.GetKey(input) && !myStatus.armorBroke()) {
             /* Get direction vector */
             Vector3 dirVect = new Vector3(hDir, vDir, 0);
 

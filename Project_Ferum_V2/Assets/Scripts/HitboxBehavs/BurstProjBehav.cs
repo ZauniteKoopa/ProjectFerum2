@@ -34,10 +34,7 @@ public class BurstProjBehav : ProjectileBehav
     void OnTriggerEnter2D(Collider2D tgt) {
         /* Behavior when an enemy is hit */
         if(enemyHit(tgt.tag)) {
-            hit.Add(tgt);
-            EntityStatus tgtStatus = tgt.GetComponent<EntityStatus>();
-            applyEffects(tgtStatus);
-
+            attkInitialEnemy(tgt);
             triggerSplashHitbox();
         }
 
@@ -45,10 +42,22 @@ public class BurstProjBehav : ProjectileBehav
         if(tgt.tag == GeneralConstants.WALL_TAG) {
             triggerSplashHitbox();
         }
+
+        /* Behavior when hitting another attack */
+        if (hitAttack(tgt) && overpoweredBy(tgt.GetComponent<Hitbox>())) {
+            triggerSplashHitbox();
+        }
+    }
+
+    //Protected method to add enemy to hit
+    protected void attkInitialEnemy(Collider2D tgt) {
+        hit.Add(tgt);
+        EntityStatus tgtStatus = tgt.GetComponent<EntityStatus>();
+        applyEffects(tgtStatus);
     }
 
     //Method for triggering splash hitbox
-    void triggerSplashHitbox() {
+    protected void triggerSplashHitbox() {
         //Disable initial projectile hitbox
         moving = false;
         blastTimer = 0f;
@@ -56,12 +65,6 @@ public class BurstProjBehav : ProjectileBehav
 
         //Enable splash box's hitbox
         splashBox.gameObject.SetActive(true);
-    }
-
-    //Method for setting up the tags of this hitbox before firing
-    public void setUpTags(string newTag) {
-        tag = newTag;
-        splashBox.tag = newTag;
     }
 
     //Method for splash hitbox to use to enact damage

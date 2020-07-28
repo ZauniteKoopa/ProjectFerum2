@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c114e601c43a5bfba9caa2f212a8d9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 4
   mainHB: {fileID: 8391749332593201037}
 --- !u!50 &2035088697939362143
 Rigidbody2D:
@@ -257,6 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 123f7f4d78eeda8a9be36bee75353e0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 4
   projSpeed: 0.1
   splashBox: {fileID: 8391749332200596988}
 --- !u!50 &-132628194859333887

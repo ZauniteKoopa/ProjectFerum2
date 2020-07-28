@@ -103,6 +103,16 @@ public abstract class IMove
             return "";
     }
 
+    /* Method to check what assist move input was used */
+    protected string getAssistInputKey() {
+        if (Input.GetKey(ControlMap.ASSIST_MOVE_LEFT))
+            return ControlMap.ASSIST_MOVE_LEFT;
+        else if (Input.GetKey(ControlMap.ASSIST_MOVE_RIGHT))
+            return ControlMap.ASSIST_MOVE_RIGHT;
+        else
+            return "";
+    }
+
 
     //  --------------------
     //  Abstract methods to be implemented

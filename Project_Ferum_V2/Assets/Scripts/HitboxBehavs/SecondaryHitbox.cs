@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SecondaryHitbox : MonoBehaviour
+public class SecondaryHitbox : Hitbox
 {
     //Reference variable to main hitbox script
     [SerializeField]

@@ -7,6 +7,7 @@ public class DashMove : AmmoMove
     //Innate move variables
     private int power;
     private float dashForce;
+    private int priority;
 
     //Reference variables
     private EntityStatus status;
@@ -17,12 +18,13 @@ public class DashMove : AmmoMove
     private bool hitTgt;
 
     //DashMove constructor
-    public DashMove(EntityStatus es, int pwr, int numDashes, float regen, float kbForce, float duration) : base(numDashes, regen, true){
+    public DashMove(EntityStatus es, int pwr, int numDashes, float regen, float kbForce, float duration, int prio) : base(numDashes, regen, true){
         status = es;
         power = pwr;
         dashForce = kbForce;
         dashDuration = duration;
         hitbox = status.transform.GetChild(1);
+        priority = prio;
     }
 
     /* Allows player to shoot */
@@ -32,7 +34,7 @@ public class DashMove : AmmoMove
         dirVector.Normalize();
 
         //Set Dashbox characteristics
-        hitbox.GetComponent<DashBoxBehav>().activateHitbox(assignHitboxTag(status.tag), this);
+        hitbox.GetComponent<DashBoxBehav>().activateHitbox(assignHitboxTag(status.tag), this, priority);
 
         //Set up dash and then exert force
         float timer = 0f;
@@ -72,11 +74,13 @@ public class DashMove : AmmoMove
         hitTgt = true;
 
         //Apply damage
-        int damage = damageCalc(status.getLevel(), power, status, tgt, true);
-        bool enemyLived = tgt.applyDamage(damage);
+        if (tgt != null) {
+            int damage = damageCalc(status.getLevel(), power, status, tgt, true);
+            bool enemyLived = tgt.applyDamage(damage);
 
-        //Apply recoil forces
-        status.StartCoroutine(applyRecoilForces(enemyLived, tgt));
+            //Apply recoil forces
+            status.StartCoroutine(applyRecoilForces(enemyLived, tgt));
+        }
     }
 
     /* Apply recoil forces */

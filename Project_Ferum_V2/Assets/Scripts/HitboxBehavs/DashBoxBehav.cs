@@ -5,7 +5,8 @@ using UnityEngine;
 public class DashBoxBehav : Hitbox
 {
     //Activates hitbox
-    public void activateHitbox(string attackTag, IMove move) {
+    public void activateHitbox(string attackTag, IMove move, int priority) {
+        setPriority(priority);
         setMove(move);
         tag = attackTag;
         gameObject.SetActive(true);
@@ -22,6 +23,16 @@ public class DashBoxBehav : Hitbox
             EntityStatus tgtStatus = tgt.GetComponent<EntityStatus>();
             applyEffects(tgtStatus);
             deactivateHitbox();
+        }
+
+        /* Behavior when wall is hit */
+        if(tgt.tag == GeneralConstants.WALL_TAG) {
+            applyEffects(null);
+        }
+
+        /* Behavior when hitting another attack */
+        if (hitAttack(tgt) && overpoweredBy(tgt.GetComponent<Hitbox>())) {
+            applyEffects(null);
         }
     }
 

@@ -1,3 +1,9 @@
+commit 1da6a84afed508e1e55b413c1d06822d17556c1b
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Mon Jul 27 14:37:42 2020 -0500
+
+    Implemented aqua tail / quick attack and created DashMove apparatus
+
 commit ae6558f03ce0b96bbdd10bbe8f17727291be931d
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Sun Jul 26 16:00:31 2020 -0500

@@ -7,6 +7,7 @@ public class BasicMeleeAttack : FrameMove
     /* Variables regarding power and stats to be set in constructor */
     private int power;
     private float knockback;
+    private int priority;
 
     /* Reference variables */
     private EntityStatus myStatus;
@@ -14,11 +15,12 @@ public class BasicMeleeAttack : FrameMove
 
 
     /* Constructor */
-    public BasicMeleeAttack(int pwr, float kb, EntityStatus entity) : base(true) {
+    public BasicMeleeAttack(int pwr, float kb, EntityStatus entity, int prio) : base(true) {
         myStatus = entity;
 
         hitbox = entity.transform.GetChild(0);
         hitbox.tag = assignHitboxTag(entity.tag);
+        priority = prio;
 
         knockback = kb;
         power = pwr;
@@ -30,6 +32,7 @@ public class BasicMeleeAttack : FrameMove
     public override IEnumerator executeMovePlayer(int hDir, int vDir) {
         /* Set hitbox's assigned move to this*/
         hitbox.GetComponent<Hitbox>().setMove(this);
+        hitbox.GetComponent<Hitbox>().setPriority(priority);
         hitbox.GetComponent<StaticHitbox>().resetHitbox();
 
         /* Reposition hitbox*/
@@ -69,7 +72,7 @@ public class BasicMeleeAttack : FrameMove
         bool applyKB = tgt.applyDamage(damage);
 
         if (applyKB) {
-            myStatus.StartCoroutine(applyKnockback(tgt));
+            tgt.StartCoroutine(applyKnockback(tgt));
         }
     }
 

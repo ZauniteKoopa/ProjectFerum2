@@ -21,3 +21,5 @@ public static class ControlMap
     public const string ABILITY_2 = "i";
     public const string ABILITY_3 = "o";
 }
+
+

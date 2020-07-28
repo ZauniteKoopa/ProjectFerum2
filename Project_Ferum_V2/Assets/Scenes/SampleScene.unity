@@ -228,7 +228,7 @@ MonoBehaviour:
   maxHealth: 80
   moveNames:
   - AquaTail
-  - BulletSeed
+  - WaterPulse
   - HyperVoice
   healthBar: {fileID: 1108636227}
   armorBar: {fileID: 1824653616}
@@ -919,6 +919,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f6a75da78520033bee2f6ee4ca5c73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!212 &218604850
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1174,6 +1176,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f8cdc37cf07612f97ada714c99364b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!61 &264355907
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1364,6 +1368,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f6a75da78520033bee2f6ee4ca5c73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!212 &272446037
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1715,7 +1721,7 @@ MonoBehaviour:
   moveNames:
   - Pound
   - FlameBurst
-  - HyperVoice
+  - Protect
   healthBar: {fileID: 1108636227}
   armorBar: {fileID: 1824653616}
   controller: {fileID: 768267272}
@@ -2810,6 +2816,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f6a75da78520033bee2f6ee4ca5c73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!61 &584655535
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8565,6 +8573,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f6a75da78520033bee2f6ee4ca5c73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!212 &1548964802
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9364,6 +9374,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f6a75da78520033bee2f6ee4ca5c73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!212 &1832018233
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9633,6 +9645,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f8cdc37cf07612f97ada714c99364b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!1 &1928132411
 GameObject:
   m_ObjectHideFlags: 0
@@ -9679,6 +9693,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f8cdc37cf07612f97ada714c99364b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePriority: 0
+  friendlyFire: 0
 --- !u!61 &1928132414
 BoxCollider2D:
   m_ObjectHideFlags: 0

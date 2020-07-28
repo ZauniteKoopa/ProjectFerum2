@@ -58,6 +58,9 @@ public class EntityStatus : MonoBehaviour
     private bool attacking = false;         //Entity is in the middle of an attack
     private bool shieldStunned = false;     //Entity is shield stunned
     private bool assistCancelled = false;   //Entity took damage, cancelling an assistMove sequence
+
+    /* Allows for an invincibility duration */
+    private const float INVINCIBILITY_DURATION = 0.1f;
     
     /* UI Elements */
     [Header("User Interface:")]
@@ -97,6 +100,11 @@ public class EntityStatus : MonoBehaviour
             default:
                 throw new System.Exception("Error: Invalid stat ID");
         }
+    }
+
+    /* Mutator method for invincibility */
+    public void setInvincibility(bool newState) {
+        invincibility = newState;
     }
 
     /* Accessor method to health */
@@ -202,7 +210,7 @@ public class EntityStatus : MonoBehaviour
         if (!invincibility) {
             /* Only allow invincibility if the unit is a player */
             if(transform.tag == GeneralConstants.PLAYER_TAG)
-                StartCoroutine(invincibilityFrames());
+                StartCoroutine(invincibilityPhase(INVINCIBILITY_DURATION));
 
             /* Do damage */
             curHealth -= damage;
@@ -241,10 +249,8 @@ public class EntityStatus : MonoBehaviour
         return false;
     }
 
-    /* Allow for small invincibility period upon getting hit */
-    private const float INVINCIBILITY_DURATION = 0.1f;
-
-    IEnumerator invincibilityFrames() {
+    /* Method that allows for a period of invincibility */
+    public IEnumerator invincibilityPhase(float duration) {
         invincibility = true;
         yield return new WaitForSeconds(INVINCIBILITY_DURATION);
         invincibility = false;
@@ -362,7 +368,7 @@ public class EntityStatus : MonoBehaviour
     private IMove nameToMove(string moveName) {
         switch (moveName) {
             case "Pound":
-                return new BasicMeleeAttack(25, 175f, this);
+                return new BasicMeleeAttack(25, 175f, this, 4);
             case "BulletSeed":
                 return new BulletMove(this, 10, 20, 1.5f, 0.3f, true, "MoveHitboxes/Bullet");
             case "HyperVoice":
@@ -374,13 +380,15 @@ public class EntityStatus : MonoBehaviour
                 Transform hitbox = Resources.Load<Transform>("MoveHitboxes/AquaTailHitbox");
                 return new CircleAoE(3.5f, false, 40, 200f, true, hitbox, this);
             case "QuickAttack":
-                return new DashMove(this, 15, 4, 1.25f, 650f, 0.15f);
+                return new DashMove(this, 15, 4, 1.25f, 650f, 0.15f, 2);
+            case "WaterPulse" :
+                return new SingleProjCD(this, 40, 500f, 8f, "MoveHitboxes/WaterPulse");
+            case "Protect" :
+                return new Protect(this);
             case "None":
                 return null;
             default:
                 throw new System.Exception("ERROR: " + moveName +" not found in move inventory");
-
-
         }
     }
 
