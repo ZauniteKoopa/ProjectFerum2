@@ -8,11 +8,11 @@ public class BasicMeleeAttack : FrameMove
     private int power;
     private float knockback;
     private int priority;
+    private float KB_DURATION = 0.125f;
 
     /* Reference variables */
     private EntityStatus myStatus;
     private Transform hitbox;
-
 
     /* Constructor */
     public BasicMeleeAttack(int pwr, float kb, EntityStatus entity, int prio) : base(true) {
@@ -72,23 +72,8 @@ public class BasicMeleeAttack : FrameMove
         bool applyKB = tgt.applyDamage(damage);
 
         if (applyKB) {
-            tgt.StartCoroutine(applyKnockback(tgt));
+            Vector2 kbVector = dirKnockbackCalc(myStatus.transform.position, tgt.transform.position, knockback);
+            tgt.StartCoroutine(tgt.receiveKnockback(kbVector, KB_DURATION));
         }
-    }
-
-    /* Method to apply knockback to target if applyDamage returned true (attack hit the tgt and tgt is still alive)*/
-    private float KB_DURATION = 0.125f;
-
-    IEnumerator applyKnockback(EntityStatus tgt) {
-        /* Apply knockback vector to entity */
-        Vector2 kbVector = dirKnockbackCalc(myStatus.transform.position, tgt.transform.position, knockback);
-        Rigidbody2D rb = tgt.GetComponent<Rigidbody2D>();
-        rb.AddForce(kbVector);
-
-        /* Wait for duration */
-        yield return new WaitForSeconds(KB_DURATION);
-
-        /* cancel knockback */
-        rb.velocity = Vector2.zero;
-    }
+    }    
 }

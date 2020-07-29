@@ -20,9 +20,9 @@ public class PlayerController : MonoBehaviour
 
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
-    private const float ASSIST_MOVE_LINGER_TIME = 2f;
+    private const float ASSIST_MOVE_LINGER_TIME = 1f;
     private const float MAX_ASSIST_SEQ_DURATION = 3f;
-    private const float ENEMY_LINGER_REDUCTION = 0.4f;
+    private const float ENEMY_LINGER_REDUCTION = 0.3f;
     private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
     private int assistIndex = -1;                       //Index of assist fighter before doing assistMoves
     private EntityStatus curAssist = null;              //The current assist fighter

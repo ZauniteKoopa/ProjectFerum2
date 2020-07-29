@@ -69,19 +69,12 @@ public class SingleProjCD : CooldownMove
         bool applyKB = tgt.applyDamage(damage);
 
         if (applyKB) {
-            tgt.StartCoroutine(applyKnockback(tgt));
+            Rigidbody2D rb = tgt.GetComponent<Rigidbody2D>();
+            Vector3 dirVect = tgt.transform.position - curHitbox.position;
+            dirVect.Normalize();
+            dirVect *= knockback;
+
+            tgt.StartCoroutine(tgt.receiveKnockback(dirVect, KB_DURATION));
         }
-    }
-
-    IEnumerator applyKnockback(EntityStatus tgt) {
-        Rigidbody2D rb = tgt.GetComponent<Rigidbody2D>();
-        Vector3 dirVect = tgt.transform.position - curHitbox.position;
-        dirVect.Normalize();
-        dirVect *= knockback;
-        rb.AddForce(dirVect);
-
-        yield return new WaitForSeconds(KB_DURATION);
-
-        rb.velocity = Vector3.zero;
     }
 }

@@ -10,6 +10,9 @@ public class CircleAoE : CooldownMove
     private bool isPhy;
     private const float MOVE_DURATION = 0.2f;
 
+    /* Knockback variables */
+    private float KB_DURATION = 0.125f;
+
     /* Reference Variables */
     private EntityStatus myStatus;
     private Transform hitbox;
@@ -56,23 +59,8 @@ public class CircleAoE : CooldownMove
         bool applyKB = tgt.applyDamage(damage);
 
         if (applyKB) {
-            myStatus.StartCoroutine(applyKnockback(tgt));
+            Vector2 kbVector = dirKnockbackCalc(myStatus.transform.position, tgt.transform.position, kb);
+            tgt.StartCoroutine(tgt.receiveKnockback(kbVector, KB_DURATION));
         }
-    }
-
-    /* Method to apply knockback to target if applyDamage returned true (attack hit the tgt and tgt is still alive)*/
-    private float KB_DURATION = 0.125f;
-
-    IEnumerator applyKnockback(EntityStatus tgt) {
-        /* Apply knockback vector to entity */
-        Vector2 kbVector = dirKnockbackCalc(myStatus.transform.position, tgt.transform.position, kb);
-        Rigidbody2D rb = tgt.GetComponent<Rigidbody2D>();
-        rb.AddForce(kbVector);
-
-        /* Wait for duration */
-        yield return new WaitForSeconds(KB_DURATION);
-
-        /* cancel knockback */
-        rb.velocity = Vector2.zero;
     }
 }

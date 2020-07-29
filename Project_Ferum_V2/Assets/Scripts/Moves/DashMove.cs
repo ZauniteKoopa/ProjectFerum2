@@ -17,6 +17,10 @@ public class DashMove : AmmoMove
     private float dashDuration;
     private bool hitTgt;
 
+    // Recoil force constants
+    private const float RECOIL_DURATION = 0.1f;
+    private const float RECOIL_FORCE = 250f;
+
     //DashMove constructor
     public DashMove(EntityStatus es, int pwr, int numDashes, float regen, float kbForce, float duration, int prio) : base(numDashes, regen, true){
         status = es;
@@ -43,7 +47,7 @@ public class DashMove : AmmoMove
         rb.AddForce(dirVector * dashForce);
         useAmmo();
 
-        //Calculate dash suration
+        //Calculate dash duration
         while(!hitTgt && timer < dashDuration && !status.armorBroke()) {
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
@@ -78,31 +82,15 @@ public class DashMove : AmmoMove
             int damage = damageCalc(status.getLevel(), power, status, tgt, true);
             bool enemyLived = tgt.applyDamage(damage);
 
-            //Apply recoil forces
-            status.StartCoroutine(applyRecoilForces(enemyLived, tgt));
+            //Apply player recoil forces
+            Vector3 playerRecoil = dirKnockbackCalc(tgt.transform.position, status.transform.position, RECOIL_FORCE);
+            status.StartCoroutine(status.receiveKnockback(playerRecoil, RECOIL_DURATION));
+
+            //Apply enemy recoil forces IF enemy survived
+            if (enemyLived) {
+                Vector3 enemyRecoil = dirKnockbackCalc(status.transform.position, tgt.transform.position, RECOIL_FORCE);
+                status.StartCoroutine(tgt.receiveKnockback(enemyRecoil, RECOIL_DURATION));
+            }
         }
-    }
-
-    /* Apply recoil forces */
-    private const float RECOIL_DURATION = 0.1f;
-    private const float RECOIL_FORCE = 250f;
-
-    IEnumerator applyRecoilForces(bool enemyLived, EntityStatus tgt) {
-        //Enact player recoil
-        Vector3 playerRecoil = dirKnockbackCalc(tgt.transform.position, status.transform.position, RECOIL_FORCE);
-        status.GetComponent<Rigidbody2D>().AddForce(playerRecoil);
-
-        //Enact enemy recoil if necessary
-        if (enemyLived) {
-            Vector3 enemyRecoil = dirKnockbackCalc(status.transform.position, tgt.transform.position, RECOIL_FORCE);
-            tgt.GetComponent<Rigidbody2D>().AddForce(enemyRecoil);
-        }
-
-        yield return new WaitForSeconds(RECOIL_DURATION);
-
-        //Set all velocities to 0
-        status.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
-        if (enemyLived)
-            tgt.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
     }
 }

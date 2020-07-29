@@ -1,3 +1,9 @@
+commit d1193cb1ff378a9356468cae29096cc90d52f967
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Tue Jul 28 16:57:35 2020 -0500
+
+    Implemented water pulse, hitbox priority, and protect
+
 commit 1da6a84afed508e1e55b413c1d06822d17556c1b
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Mon Jul 27 14:37:42 2020 -0500

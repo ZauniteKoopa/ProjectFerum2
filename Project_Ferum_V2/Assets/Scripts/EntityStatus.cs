@@ -58,6 +58,7 @@ public class EntityStatus : MonoBehaviour
     private bool attacking = false;         //Entity is in the middle of an attack
     private bool shieldStunned = false;     //Entity is shield stunned
     private bool assistCancelled = false;   //Entity took damage, cancelling an assistMove sequence
+    private bool unflinching = false;       //Entity will no longer be affected by knockback
 
     /* Allows for an invincibility duration */
     private const float INVINCIBILITY_DURATION = 0.1f;
@@ -68,6 +69,8 @@ public class EntityStatus : MonoBehaviour
     private Image healthBar = null;
     [SerializeField]
     private Image armorBar = null;
+    [SerializeField]
+    private ChannelUI channelBar = null;
     [Space(20)]
 
     /* gameObject Controller to send message to upon death IF NECESSARY */
@@ -75,7 +78,7 @@ public class EntityStatus : MonoBehaviour
     private GameObject controller = null;
 
     //  ---------------------
-    //  Accessor and mutator methods 
+    //  Accessor and mutator methods (Specifically for flags)
     //  ---------------------
 
     /* Accessor method to level */
@@ -122,6 +125,11 @@ public class EntityStatus : MonoBehaviour
         return shieldStunned;
     }
 
+    /* Mutator methods for unflinching */
+    public void setUnflinching(bool state) {
+        unflinching = state;
+    }
+
     //Consts for movement speed calculations
     private const float MIN_BASE_MOVE = 0.07f;          //Minimum movement speed a pokemon can go
     private const float MAX_BASE_MOVE = 0.2f;           //Maximum movement speed a pokemon can go
@@ -150,6 +158,18 @@ public class EntityStatus : MonoBehaviour
     public bool isAssistCancelled() {
         return assistCancelled;
     }
+
+    /* Wrapper methods to access channelBar */
+    public void setChannelActive(bool state) {
+        channelBar.setActive(state);
+    }
+
+    public void setChannelProgress(float cur, float max) {
+        channelBar.setChannel(cur, max);
+    }
+
+
+
 
     //  ---------------------
     //  Actual methods
@@ -281,6 +301,15 @@ public class EntityStatus : MonoBehaviour
         movingDisabled = false;
     }
 
+    /* Method on receiving knockback */
+    public IEnumerator receiveKnockback(Vector3 kbForce, float kbDuration) {
+        if (!unflinching) {
+            GetComponent<Rigidbody2D>().AddForce(kbForce);
+            yield return new WaitForSeconds(kbDuration);
+            GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+        }
+    }
+
 
     /* Method used to execute a certain move as player
         Pre: moveID >= 0 && moveID < 3 and move is valid (not null and canRun()).
@@ -378,13 +407,15 @@ public class EntityStatus : MonoBehaviour
                 return new BulletMove(this, 20, 12, 2.5f, 0.5f, false, "MoveHitboxes/BurstProj");
             case "AquaTail":
                 Transform hitbox = Resources.Load<Transform>("MoveHitboxes/AquaTailHitbox");
-                return new CircleAoE(3.5f, false, 40, 200f, true, hitbox, this);
+                return new CircleAoE(3.5f, false, 40, 400f, true, hitbox, this);
             case "QuickAttack":
                 return new DashMove(this, 15, 4, 1.25f, 650f, 0.15f, 2);
             case "WaterPulse" :
                 return new SingleProjCD(this, 40, 500f, 8f, "MoveHitboxes/WaterPulse");
             case "Protect" :
                 return new Protect(this);
+            case "FlameCharge" :
+                return new ChannelDash(this, 10.5f, 75, 40, 8, 4, 1.5f);
             case "None":
                 return null;
             default:
