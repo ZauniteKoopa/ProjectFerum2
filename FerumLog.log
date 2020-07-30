@@ -1,3 +1,9 @@
+commit 2c58973826a102818b2ab1a76936b4aae4c98f87
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Wed Jul 29 16:36:43 2020 -0500
+
+    Implemented FlameCharge in its entirety: includes refactoring knockback, unflinching flag, and channeling mechanics
+
 commit d1193cb1ff378a9356468cae29096cc90d52f967
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Tue Jul 28 16:57:35 2020 -0500

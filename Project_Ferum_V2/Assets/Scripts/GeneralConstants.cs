@@ -18,6 +18,13 @@ public class GeneralConstants
         DEFENSE,
         SP_ATTACK,
         SP_DEFENSE,
-        SPEED
+        SPEED,
+        NUM_STATS
     }
+
+    //Effect IDs
+    public const int POISON_ID = 5;
+    public const int PARALYSIS_ID = 6;
+    public const int BURN_ID = 7;
+    public const int NUM_EFFECTS = 8;
 }
