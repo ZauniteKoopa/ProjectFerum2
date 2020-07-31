@@ -1275,7 +1275,7 @@ MonoBehaviour:
   speed: 30
   maxHealth: 5
   moveNames:
-  - Pound
+  - Agility
   - BulletSeed
   - QuickAttack
   healthBar: {fileID: 1108636227}

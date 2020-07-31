@@ -19,7 +19,7 @@ public abstract class IMove
     //  Post: Returns an int representing the amount of damage applied to enemy
     public int damageCalc(int level, int power, EntityStatus attacker, EntityStatus tgt, bool isPhysical) {
         /* Get necessariy stats from entity*/
-        int entityAttack, enemyDef;
+        float entityAttack, enemyDef;
 
         if (isPhysical) {
             entityAttack = attacker.getStat((int)GeneralConstants.statIDs.ATTACK);
@@ -29,7 +29,7 @@ public abstract class IMove
             enemyDef = tgt.getStat((int)GeneralConstants.statIDs.SP_DEFENSE);
         }
 
-        float attDefRatio = (float)entityAttack / (float)enemyDef;
+        float attDefRatio = entityAttack / enemyDef;
 
         /* Calculate damage */
         float damage = (0.5f * level + 2) * power * attDefRatio * 0.06f;

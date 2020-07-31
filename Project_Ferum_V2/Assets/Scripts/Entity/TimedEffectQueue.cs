@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimedEffectQueue : MonoBehaviour
+public class TimedEffectQueue
 {
     //Stats array consisting of values that entity will use when accessing stats
     //  [(first 5 stats), POISON, PARALYSIS, BURN]
@@ -20,6 +20,8 @@ public class TimedEffectQueue : MonoBehaviour
 
     //Constants concerning health decay on poison
     private const float HEALTH_POISON_PERCENT = 0.05f;
+    private const float POISON_INTERVAL = 1.2f;
+    private float pTimer = 0;
 
     //Default constructor
     public TimedEffectQueue() {
@@ -44,12 +46,13 @@ public class TimedEffectQueue : MonoBehaviour
                 int statusType = front.getEffectType();
                 statEffectArr[statusType] = front.reverseEffect(statEffectArr[statusType]);
                 queue.RemoveFirst();
+                Debug.Log("effect removed");
 
                 if (queue.Count == 0) {
                     timer = 0f;
                 }
 
-                front = queue.First.Value;
+                front = (queue.First == null) ? null : queue.First.Value;
             }
         }
     }
@@ -101,21 +104,26 @@ public class TimedEffectQueue : MonoBehaviour
 
     //Method that states whether or not the entity can regenerate health or armor
     public bool canRegenHealth() {
-        return statEffectArr[GeneralConstants.BURN_ID] > 0 || statEffectArr[GeneralConstants.POISON_ID] > 0;
+        return statEffectArr[GeneralConstants.BURN_ID] == 0 || statEffectArr[GeneralConstants.POISON_ID] == 0;
     }
 
     public bool canRegenArmor() {
-        return statEffectArr[GeneralConstants.BURN_ID] > 0;
+        return statEffectArr[GeneralConstants.BURN_ID] == 0;
     }
 
     //Method that updates health if poisoned: POISON DOESN'T KILL
     public float updateHealth(float curHealth, float maxHealth) {
         //If poisoned
         if (statEffectArr[GeneralConstants.POISON_ID] > 0) {
-            float newHealth = curHealth - (maxHealth * HEALTH_POISON_PERCENT);
-            if (newHealth <= 0f)
-                newHealth = 1f;
-            return newHealth;
+            pTimer += Time.deltaTime;
+
+            if (pTimer >= POISON_INTERVAL) {
+                pTimer = 0f;
+                float newHealth = curHealth - (maxHealth * HEALTH_POISON_PERCENT);
+                if (newHealth <= 0f)
+                    newHealth = 1f;
+                return newHealth;
+            }
         }
 
         return curHealth;

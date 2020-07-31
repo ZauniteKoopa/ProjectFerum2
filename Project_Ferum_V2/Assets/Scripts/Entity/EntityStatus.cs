@@ -12,15 +12,15 @@ public class EntityStatus : MonoBehaviour
 
     /* Stats */
     [SerializeField]
-    private int attk = 0;
+    private float attk = 0;
     [SerializeField]
-    private int def = 0;
+    private float def = 0;
     [SerializeField]
-    private int sAttk = 0;
+    private float sAttk = 0;
     [SerializeField]
-    private int sDef = 0;
+    private float sDef = 0;
     [SerializeField]
-    private int speed = 0;
+    private float speed = 0;
     [Space(20)]
 
     /* Health */
@@ -40,7 +40,7 @@ public class EntityStatus : MonoBehaviour
     [Space(20)]
 
     /* Stat effects - to be added */
-
+    private TimedEffectQueue statusQueue;
 
     /* Health regen variables */
     private float hTimer = 0f;
@@ -87,19 +87,21 @@ public class EntityStatus : MonoBehaviour
     }
 
     /* Accessor methods to stats */
-    public int getStat(int statID) {
+    public float getStat(int statID) {
+        float retStat = statusQueue.getStatFactor(statID);
+
         switch(statID)
         {
             case (int)GeneralConstants.statIDs.ATTACK:
-                return attk;
+                return retStat * attk;
             case (int)GeneralConstants.statIDs.DEFENSE:
-                return def;
+                return retStat * def;
             case (int)GeneralConstants.statIDs.SP_ATTACK:
-                return sAttk;
+                return retStat * sAttk;
             case (int)GeneralConstants.statIDs.SP_DEFENSE:
-                return sDef;
+                return retStat * sDef;
             case (int)GeneralConstants.statIDs.SPEED:
-                return speed;
+                return retStat * speed;
             default:
                 throw new System.Exception("Error: Invalid stat ID");
         }
@@ -131,14 +133,14 @@ public class EntityStatus : MonoBehaviour
     }
 
     //Consts for movement speed calculations
-    private const float MIN_BASE_MOVE = 0.07f;          //Minimum movement speed a pokemon can go
+    private const float MIN_BASE_MOVE = 0.065f;          //Minimum movement speed a pokemon can go
     private const float MAX_BASE_MOVE = 0.2f;           //Maximum movement speed a pokemon can go
     private const float BASE_SPEED_CAP = 150f;          //Capped speed
     private const float ATTACK_MOVE_REDUCTION = 0.35f;  //Movement speed reduction if entity is attacking
 
     /* Method to calculate movement speed of this entity */
     public float getMovementSpeed() {
-        float curSpeed = (float)speed;
+        float curSpeed = speed * statusQueue.getStatFactor((int)GeneralConstants.statIDs.SPEED);
         float movement;
 
         if (curSpeed >= BASE_SPEED_CAP)
@@ -147,16 +149,6 @@ public class EntityStatus : MonoBehaviour
             movement = MIN_BASE_MOVE + (MAX_BASE_MOVE - MIN_BASE_MOVE) * (curSpeed / BASE_SPEED_CAP);
 
         return (attacking) ? movement * ATTACK_MOVE_REDUCTION : movement;
-    }
-
-    /* Method used to reset assist status */
-    public void resetAssistStatus() {
-        assistCancelled = false;
-    }
-
-    /* Method to check if assist is cancelled */
-    public bool isAssistCancelled() {
-        return assistCancelled;
     }
 
     /* Wrapper methods to access channelBar */
@@ -181,6 +173,7 @@ public class EntityStatus : MonoBehaviour
         curHealth = maxHealth;
         maxArmor = Mathf.Max(def, sDef);
         curArmor = maxArmor;
+        statusQueue = new TimedEffectQueue();
 
         /* Sets moves for this entity by looking at its moveNames */
         for(int i = 0; i < moveNames.Length; i++) {
@@ -191,7 +184,7 @@ public class EntityStatus : MonoBehaviour
     // Regenerates health and armor bars
     public void regenBars() {
         /* Regenerating health */
-        if(curHealth < maxHealth) {
+        if(curHealth < maxHealth && statusQueue.canRegenHealth()) {
             //Update timer 
             hTimer += Time.deltaTime;
 
@@ -210,7 +203,7 @@ public class EntityStatus : MonoBehaviour
         }
 
         /* Recovering armor */
-        if(underPressure && !shieldStunned) {
+        if(underPressure && !shieldStunned && statusQueue.canRegenArmor()) {
             //Update timer 
             aTimer += Time.deltaTime;
 
@@ -220,6 +213,13 @@ public class EntityStatus : MonoBehaviour
                 armorBar.fillAmount = 1f;
             }
         }
+
+        //Update health depending on the statuses
+        statusQueue.updateHealth(curHealth, maxHealth);
+        healthBar.fillAmount = curHealth / maxHealth;
+
+        //Update queue
+        statusQueue.updateQueue();
     }
 
     /* Method used to apply damage to this entity
@@ -267,6 +267,11 @@ public class EntityStatus : MonoBehaviour
         }
 
         return false;
+    }
+
+    /* Method to add timed effect to the statusQueue */
+    public void applyTimedEffect(TimedEffect effect) {
+        statusQueue.addEffect(effect);
     }
 
     /* Method that allows for a period of invincibility */
@@ -416,6 +421,8 @@ public class EntityStatus : MonoBehaviour
                 return new Protect(this);
             case "FlameCharge" :
                 return new ChannelDash(this, 10.5f, 75, 40, 8, 4, 1.5f);
+            case "Agility" :
+                return new StatEffectChannel(this, 13.5f, 2.75f, (int)GeneralConstants.statIDs.SPEED, 6f, 1.5f);
             case "None":
                 return null;
             default:
@@ -427,6 +434,16 @@ public class EntityStatus : MonoBehaviour
     //  ---------------------
     //  UI Methods and move regeneration regarding player only
     //  ---------------------
+
+    /* Method used to reset assist status: ONLY USED BY PLAYER */
+    public void resetAssistStatus() {
+        assistCancelled = false;
+    }
+
+    /* Method to check if assist is cancelled: ONLY USED BY PLAYER */
+    public bool isAssistCancelled() {
+        return assistCancelled;
+    }
 
     /* Method used to update UI abilities / moves
         Pre: The array sent in MUST be of size 3 and all filled

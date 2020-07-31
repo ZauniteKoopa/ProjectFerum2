@@ -1,3 +1,9 @@
+commit 2f2bcf0ba452048360c9e3704ef68a95da3b5e8d
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Thu Jul 30 16:13:35 2020 -0500
+
+    Added infrastructure to support TimedEffects: Both status effects and stat effects
+
 commit 2c58973826a102818b2ab1a76936b4aae4c98f87
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Wed Jul 29 16:36:43 2020 -0500
