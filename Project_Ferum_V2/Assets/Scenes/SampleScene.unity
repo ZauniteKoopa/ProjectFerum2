@@ -229,7 +229,7 @@ MonoBehaviour:
   moveNames:
   - AquaTail
   - WaterPulse
-  - HyperVoice
+  - RainDance
   healthBar: {fileID: 1108636227}
   armorBar: {fileID: 1824653616}
   channelBar: {fileID: 2138763890}
@@ -2696,7 +2696,7 @@ MonoBehaviour:
   def: 40
   sAttk: 10
   sDef: 35
-  speed: 0
+  speed: 30
   maxHealth: 50
   moveNames:
   - Pound

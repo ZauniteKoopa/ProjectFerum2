@@ -133,8 +133,8 @@ public class EntityStatus : MonoBehaviour
     }
 
     //Consts for movement speed calculations
-    private const float MIN_BASE_MOVE = 0.065f;          //Minimum movement speed a pokemon can go
-    private const float MAX_BASE_MOVE = 0.2f;           //Maximum movement speed a pokemon can go
+    private const float MIN_BASE_MOVE = 0.055f;          //Minimum movement speed a pokemon can go
+    private const float MAX_BASE_MOVE = 0.205f;           //Maximum movement speed a pokemon can go
     private const float BASE_SPEED_CAP = 150f;          //Capped speed
     private const float ATTACK_MOVE_REDUCTION = 0.35f;  //Movement speed reduction if entity is attacking
 
@@ -274,6 +274,30 @@ public class EntityStatus : MonoBehaviour
         statusQueue.addEffect(effect);
     }
 
+    /* Method to add zonal effect of an entity */
+    public void applyZonalEffect(int statID, float statFactor) {
+        switch(statID)
+        {
+            case (int)GeneralConstants.statIDs.ATTACK:
+                attk *= statFactor;
+                break;
+            case (int)GeneralConstants.statIDs.DEFENSE:
+                def *= statFactor;
+                break;
+            case (int)GeneralConstants.statIDs.SP_ATTACK:
+                sAttk *= statFactor;
+                break;
+            case (int)GeneralConstants.statIDs.SP_DEFENSE:
+                sDef *= statFactor;
+                break;
+            case (int)GeneralConstants.statIDs.SPEED:
+                speed *= statFactor;
+                break;
+            default:
+                throw new System.Exception("Error: Invalid stat ID");
+        }
+    }
+
     /* Method that allows for a period of invincibility */
     public IEnumerator invincibilityPhase(float duration) {
         invincibility = true;
@@ -402,28 +426,26 @@ public class EntityStatus : MonoBehaviour
     private IMove nameToMove(string moveName) {
         switch (moveName) {
             case "Pound":
-                return new BasicMeleeAttack(25, 175f, this, 4);
+                return new Pound(this);
             case "BulletSeed":
-                return new BulletMove(this, 10, 20, 1.5f, 0.3f, true, "MoveHitboxes/Bullet");
-            case "HyperVoice":
-                Transform hyperVoice = Resources.Load<Transform>("MoveHitboxes/HyperVoiceHitbox");
-                return new CircleAoE(10f, true, 100, 500f, false, hyperVoice, this);
+                return new BulletSeed(this);
             case "FlameBurst":
-                return new BulletMove(this, 20, 12, 2.5f, 0.5f, false, "MoveHitboxes/BurstProj");
+                return new FlameBurst(this);
             case "AquaTail":
-                Transform hitbox = Resources.Load<Transform>("MoveHitboxes/AquaTailHitbox");
-                return new CircleAoE(3.5f, false, 40, 400f, true, hitbox, this);
+                return new AquaTail(this);
             case "QuickAttack":
-                return new DashMove(this, 15, 4, 1.25f, 650f, 0.15f, 2);
+                return new QuickAttack(this);
             case "WaterPulse" :
-                return new SingleProjCD(this, 40, 500f, 8f, "MoveHitboxes/WaterPulse");
+                return new WaterPulse(this);
             case "Protect" :
                 return new Protect(this);
             case "FlameCharge" :
-                return new ChannelDash(this, 10.5f, 75, 40, 8, 4, 1.5f);
+                return new FlameCharge(this);
             case "Agility" :
-                return new StatEffectChannel(this, 13.5f, 2.75f, (int)GeneralConstants.statIDs.SPEED, 6f, 1.5f);
-            case "None":
+                return new Agility(this);
+            case "RainDance" :
+                return new RainDance(this);
+            case "":
                 return null;
             default:
                 throw new System.Exception("ERROR: " + moveName +" not found in move inventory");

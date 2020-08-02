@@ -18,11 +18,11 @@ public class CircleAoE : CooldownMove
     private Transform hitbox;
 
     /* Basic constructor */
-    public CircleAoE(float cd, bool moveDisabled, int power, float knockback, bool isPhy, Transform hb, EntityStatus es) : base(cd, moveDisabled){
+    public CircleAoE(float cd, bool moveDisabled, int power, float knockback, bool isPhy, string hbSrc, EntityStatus es) : base(cd, moveDisabled){
         pwr = power;
         kb = knockback;
         this.isPhy = isPhy;
-        hitbox = hb;
+        hitbox = Resources.Load<Transform>(hbSrc);
         myStatus = es;
     }
 

@@ -1,3 +1,9 @@
+commit 74882afc4e7db1f62929a46c8a966b76b438b3d9
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Fri Jul 31 15:20:33 2020 -0500
+
+    Incorporated TimedEffectQueue to EntityStatus and implemented 'Agility' move
+
 commit 2f2bcf0ba452048360c9e3704ef68a95da3b5e8d
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Thu Jul 30 16:13:35 2020 -0500
