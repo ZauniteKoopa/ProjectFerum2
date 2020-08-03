@@ -93,8 +93,10 @@ public class ChannelDash : CooldownMove
         status.setChannelActive(false);
         status.GetComponent<SpriteRenderer>().color = prevColor;
 
-        if (!status.armorBroke() && status.getHealth() > 0)
-            yield return executeDash(hDir, vDir);
+        if (!status.armorBroke() && status.getHealth() > 0) {
+            Vector3 dirVector = new Vector3(hDir, vDir, 0);
+            yield return executeDash(dirVector);
+        }
 
         startCDTimer();
         status.setUnflinching(false);
@@ -102,7 +104,33 @@ public class ChannelDash : CooldownMove
 
     /* IEnumerator to allow enemy to move */
     public override IEnumerator executeMoveEnemy(Transform tgt) {
-        yield return 0;
+        //Set up channel
+        curChannel = 0f;
+        Color prevColor = status.GetComponent<SpriteRenderer>().color;
+
+        status.setUnflinching(true);
+        status.setChannelActive(true);
+        status.GetComponent<SpriteRenderer>().color = Color.magenta;
+
+        //Channel loop
+        while (!status.armorBroke() && status.getHealth() > 0 && curChannel < maxChannel) {
+            yield return new WaitForFixedUpdate();
+
+            /* Update channel and associated UI */
+            curChannel += Time.deltaTime;
+            status.setChannelProgress(curChannel, maxChannel);
+        }
+
+        status.setChannelActive(false);
+        status.GetComponent<SpriteRenderer>().color = prevColor;
+
+        if (!status.armorBroke() && status.getHealth() > 0) {
+            Vector3 dirVector = tgt.position - status.transform.position;
+            yield return executeDash(dirVector);
+        }
+
+        status.setUnflinching(false);
+
     }
 
     /* IEnumerator to allow assist move execution */
@@ -128,8 +156,10 @@ public class ChannelDash : CooldownMove
         status.setChannelActive(false);
         status.GetComponent<SpriteRenderer>().color = prevColor;
 
-        if (!status.armorBroke() && status.getHealth() > 0)
-            yield return executeDash(hDir, vDir);
+        if (!status.armorBroke() && status.getHealth() > 0) {
+            Vector3 dirVector = new Vector3(hDir, vDir, 0);
+            yield return executeDash(dirVector);
+        }
         
         startCDTimer();
         status.setUnflinching(false);
@@ -137,7 +167,7 @@ public class ChannelDash : CooldownMove
 
 
     /* Helper IEnumerator that allows dashing */
-    IEnumerator executeDash(int hDir, int vDir) {
+    IEnumerator executeDash(Vector3 dirVector) {
         /* Calculate values concerning channelPercent */
         float channelPercent = (curChannel / maxChannel > 1f) ? 1f : curChannel / maxChannel;
         float dashForce = MIN_DASH + (MAX_DASH - MIN_DASH) * channelPercent;
@@ -145,7 +175,6 @@ public class ChannelDash : CooldownMove
         int priority = Mathf.RoundToInt(fPriority);
 
         //Get directional vector
-        Vector3 dirVector = new Vector3(hDir, vDir, 0);
         dirVector.Normalize();
 
         //Set Dashbox characteristics

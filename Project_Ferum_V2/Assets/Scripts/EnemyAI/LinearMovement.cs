@@ -36,9 +36,11 @@ public class LinearMovement : AbstractEnemy
 
     }
 
-    public override void attack() {
+    public override void attack() {}
 
-    }
+    public override bool reactToPlayer() {return false;}
+
+    public override bool reactToAttack(Transform tgt) {return false;}
 
     /* When colliding wall, reverse directions immediately */
     void OnCollisionEnter2D(Collision2D collision) {

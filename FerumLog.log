@@ -1,3 +1,9 @@
+commit 0d447ae51dc07b0d1c4c563d1498daf55345988b
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Sun Aug 2 15:00:10 2020 -0500
+
+    Implemented Zonal effects for stat effects and implemented concrete move classes for better debugging / making small value changes to moves
+
 commit 74882afc4e7db1f62929a46c8a966b76b438b3d9
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Fri Jul 31 15:20:33 2020 -0500

@@ -363,21 +363,23 @@ public class EntityStatus : MonoBehaviour
 
     /* Method used to execute move as enemy */
     public IEnumerator executeMoveEnemy(int moveID, Transform tgt) {
-        if((moveID < 0 || moveID >= 3) || tgt == null)
-            throw new System.Exception("Error: Invalid move ID");
+        if (tgt != null) {
+            if((moveID < 0 || moveID >= 3))
+                throw new System.Exception("Error: Invalid move ID");
 
-        /* Set attacking to true */
-        attacking = true;
+            /* Set attacking to true */
+            attacking = true;
 
-        /* Get necessary data from move */
-        IMove curMove = moves[moveID];
-        movingDisabled = shieldStunned || curMove.isMovementDisabled();
+            /* Get necessary data from move */
+            IMove curMove = moves[moveID];
+            movingDisabled = shieldStunned || curMove.isMovementDisabled();
 
-        yield return curMove.executeMoveEnemy(tgt);
+            yield return curMove.executeMoveEnemy(tgt);
 
-        /* Set flag variables back to false */
-        movingDisabled = shieldStunned;
-        attacking = false; 
+            /* Set flag variables back to false */
+            movingDisabled = shieldStunned;
+            attacking = false; 
+        }
     }
 
     /* Method used to execute move as an assist move */

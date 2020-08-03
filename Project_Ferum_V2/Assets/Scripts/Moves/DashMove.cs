@@ -62,7 +62,30 @@ public class DashMove : AmmoMove
 
     //Allows enemy to execute this move
     public override IEnumerator executeMoveEnemy(Transform tgt) {
-        yield return 0;
+        //Get directional vector
+        Vector3 dirVector = status.transform.position - tgt.position;
+        dirVector.Normalize();
+
+        //Set Dashbox characteristics
+        hitbox.GetComponent<DashBoxBehav>().activateHitbox(assignHitboxTag(status.tag), this, priority);
+
+        //Set up dash and then exert force
+        float timer = 0f;
+        hitTgt = false;
+        Rigidbody2D rb = status.GetComponent<Rigidbody2D>();
+        rb.AddForce(dirVector * dashForce);
+
+        //Calculate dash duration
+        while(!hitTgt && timer < dashDuration && !status.armorBroke()) {
+            yield return new WaitForFixedUpdate();
+            timer += Time.deltaTime;
+        }
+
+        //If target not hit, stop the dash by setting velocity to 0
+        if(!hitTgt) {
+            rb.velocity = Vector3.zero;
+            hitbox.GetComponent<DashBoxBehav>().deactivateHitbox();
+        }
     }
 
     //Allows player to execute this move as an assist move

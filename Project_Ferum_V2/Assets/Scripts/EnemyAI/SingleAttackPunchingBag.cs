@@ -8,9 +8,11 @@ public class SingleAttackPunchingBag : AbstractEnemy
     private const int ATTACK_ID = 0;
 
     /* Do nothing */
-    public override void movement() {
+    public override void movement() {}
 
-    }
+    public override bool reactToPlayer() {return false;}
+
+    public override bool reactToAttack(Transform tgt) {return false;}
 
     /* Use melee attack */
     public override void attack() {
