@@ -27,9 +27,33 @@ public class BasicMeleeAttack : FrameMove
     }
 
     /* IEnumerator that allows player to execute move */
+    public override IEnumerator executeMovePlayer() {
+        Vector3 distVector = getVectorToMouse(myStatus.transform);
+        int vDir = getAttackOrientation(distVector, false);
+        int hDir = getAttackOrientation(distVector, true);
+        yield return doMeleeMove(hDir, vDir);
+    }
+
+    /* IEnumerator that allows an enemy / AI to attack */
+    public override IEnumerator executeMoveEnemy(Transform tgt) {
+        Vector3 tgtPos = tgt.position;
+        Vector3 myPos = myStatus.transform.position;
+        Vector2 distVector = new Vector2(tgtPos.x - myPos.x, tgtPos.y - myPos.y);
+
+        int vDir = getAttackOrientation(distVector, false);
+        int hDir = getAttackOrientation(distVector, true);
+        yield return doMeleeMove(hDir, vDir);
+    }
+
+    /* IEnumerator that allows player to use this move as an assist move */
+    public override IEnumerator executeAssistMove() {
+        yield return executeMovePlayer();
+    }
+
+    /* Private helper method to do melee attack */
     private const float HITBOX_OFFSET = 0.5f;
 
-    public override IEnumerator executeMovePlayer(int hDir, int vDir) {
+    private IEnumerator doMeleeMove(int hDir, int vDir) {
         /* Set hitbox's assigned move to this*/
         hitbox.GetComponent<Hitbox>().setMove(this);
         hitbox.GetComponent<Hitbox>().setPriority(priority);
@@ -48,22 +72,6 @@ public class BasicMeleeAttack : FrameMove
 
         /* Reverse reposition*/
         hitbox.position -= dirVector;
-    }
-
-    /* IEnumerator that allows an enemy / AI to attack */
-    public override IEnumerator executeMoveEnemy(Transform tgt) {
-        Vector3 tgtPos = tgt.position;
-        Vector3 myPos = myStatus.transform.position;
-        Vector2 distVector = new Vector2(tgtPos.x - myPos.x, tgtPos.y - myPos.y);
-
-        int vDir = getAttackOrientation(distVector, false);
-        int hDir = getAttackOrientation(distVector, true);
-        yield return executeMovePlayer(hDir, vDir);
-    }
-
-    /* IEnumerator that allows player to use this move as an assist move */
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
-        yield return executeMovePlayer(hDir, vDir);
     }
 
     /* Does damage to target */

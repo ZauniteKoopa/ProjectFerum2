@@ -41,12 +41,9 @@ public class ChannelDash : CooldownMove
     }
 
     /* IEnumerator that allows execution of mainFighter */
-    public override IEnumerator executeMovePlayer(int tempHDir, int tempVDir) {
+    public override IEnumerator executeMovePlayer() {
         //Set up channel
         curChannel = 0f;
-        string input = getInputKey();
-        int hDir = tempHDir;
-        int vDir = tempVDir;
         Color prevColor = status.GetComponent<SpriteRenderer>().color;
 
         status.setUnflinching(true);
@@ -54,47 +51,19 @@ public class ChannelDash : CooldownMove
         status.GetComponent<SpriteRenderer>().color = Color.magenta;
 
         //Channel loop
-        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetKey(input)) {
+        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetMouseButton(0)) {
             yield return new WaitForFixedUpdate();
 
             /* Update channel and associated UI */
             curChannel += Time.deltaTime;
             status.setChannelProgress(curChannel, maxChannel);
-
-            /* Update movements */
-            int prevHDir = hDir;
-            int prevVDir = vDir;
-
-            /* Vertical movement */
-            if (Input.GetKey(ControlMap.MOVE_UP)) {
-                vDir = 1;
-            } else if (Input.GetKey(ControlMap.MOVE_DOWN)) {
-                vDir = -1;
-            } else {
-                vDir = 0;
-            }
-
-            /* Horizontal movement */
-            if (Input.GetKey(ControlMap.MOVE_RIGHT)) {
-                hDir = 1;
-            } else if (Input.GetKey(ControlMap.MOVE_LEFT)) {
-                hDir = -1;
-            } else {
-                hDir = 0;
-            }
-
-            /* If player didn't move, go back to previous dir values */
-            if(hDir == 0 && hDir == vDir) {
-                hDir = prevHDir;
-                vDir = prevVDir;
-            }
         }
 
         status.setChannelActive(false);
         status.GetComponent<SpriteRenderer>().color = prevColor;
 
         if (!status.armorBroke() && status.getHealth() > 0) {
-            Vector3 dirVector = new Vector3(hDir, vDir, 0);
+            Vector3 dirVector = getVectorToMouse(status.transform);
             yield return executeDash(dirVector);
         }
 
@@ -134,7 +103,7 @@ public class ChannelDash : CooldownMove
     }
 
     /* IEnumerator to allow assist move execution */
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
+    public override IEnumerator executeAssistMove() {
         //Set up channel
         curChannel = 0f;
         string input = getAssistInputKey();
@@ -143,9 +112,10 @@ public class ChannelDash : CooldownMove
         status.setUnflinching(true);
         status.setChannelActive(true);
         status.GetComponent<SpriteRenderer>().color = Color.magenta;
+        Vector3 dirVector = getVectorToMouse(status.transform);
 
         //Channel loop
-        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetKey(input)) {
+        while (!status.armorBroke() && status.getHealth() > 0 && !Input.GetKeyDown(input) && curChannel < maxChannel) {
             yield return new WaitForFixedUpdate();
 
             /* Update channel and associated UI */
@@ -157,7 +127,6 @@ public class ChannelDash : CooldownMove
         status.GetComponent<SpriteRenderer>().color = prevColor;
 
         if (!status.armorBroke() && status.getHealth() > 0) {
-            Vector3 dirVector = new Vector3(hDir, vDir, 0);
             yield return executeDash(dirVector);
         }
         

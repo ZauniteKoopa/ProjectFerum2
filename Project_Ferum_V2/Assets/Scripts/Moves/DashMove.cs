@@ -32,10 +32,9 @@ public class DashMove : AmmoMove
     }
 
     /* Allows player to shoot */
-    public override IEnumerator executeMovePlayer(int hDir, int vDir) {
+    public override IEnumerator executeMovePlayer() {
         //Get directional vector
-        Vector3 dirVector = new Vector3(hDir, vDir, 0);
-        dirVector.Normalize();
+        Vector3 dirVector = getVectorToMouse(status.transform);
 
         //Set Dashbox characteristics
         hitbox.GetComponent<DashBoxBehav>().activateHitbox(assignHitboxTag(status.tag), this, priority);
@@ -89,8 +88,8 @@ public class DashMove : AmmoMove
     }
 
     //Allows player to execute this move as an assist move
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
-        yield return executeMovePlayer(hDir, vDir);
+    public override IEnumerator executeAssistMove() {
+        yield return executeMovePlayer();
     }
 
     /* Does damage to enemy */

@@ -27,7 +27,7 @@ public class CircleAoE : CooldownMove
     }
 
     /* Move that allows player to execute move */
-    public override IEnumerator executeMovePlayer(int hDir, int vDir) {
+    public override IEnumerator executeMovePlayer() {
         yield return executeMoveEnemy(null);
         startCDTimer();
     }
@@ -48,7 +48,7 @@ public class CircleAoE : CooldownMove
     }
 
     /* Move that allows player to execute this move as an assist move */
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
+    public override IEnumerator executeAssistMove() {
         yield return executeMoveEnemy(null);
         startCDTimer();
     }

@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movePriority: 1
+  friendlyFire: 0
   projSpeed: 0.125
 --- !u!61 &2025592763629339447
 BoxCollider2D:

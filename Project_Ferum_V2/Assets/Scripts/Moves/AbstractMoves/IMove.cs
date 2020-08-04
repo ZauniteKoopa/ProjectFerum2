@@ -53,6 +53,17 @@ public abstract class IMove
         return result *= knockbackVal;
     }
 
+    //Get normalized Vector3 going from this transform to mouse
+    public Vector3 getVectorToMouse(Transform src) {
+        //Calculate the vector that points from the player position to the mouse (vDiff)
+        Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+
+        Vector3 retVector = new Vector3(mousePos.x - src.position.x, mousePos.y - src.position.y, 0);
+        retVector.Normalize();
+        return retVector;
+    }
+
     //Checks IMove's movement status during player's animation
     public bool isMovementDisabled() {
         return movementDisabled;
@@ -92,16 +103,16 @@ public abstract class IMove
     }
 
     /* Method to check what input was used for this move */
-    protected string getInputKey() {
-        if (Input.GetKey(ControlMap.ABILITY_1))
-            return ControlMap.ABILITY_1;
-        else if (Input.GetKey(ControlMap.ABILITY_2))
-            return ControlMap.ABILITY_2;
-        else if (Input.GetKey(ControlMap.ABILITY_3))
-            return ControlMap.ABILITY_3;
-        else
-            return "";
-    }
+    // protected string getInputKey() {
+    //     if (Input.GetKey(ControlMap.ABILITY_1))
+    //         return ControlMap.ABILITY_1;
+    //     else if (Input.GetKey(ControlMap.ABILITY_2))
+    //         return ControlMap.ABILITY_2;
+    //     else if (Input.GetKey(ControlMap.ABILITY_3))
+    //         return ControlMap.ABILITY_3;
+    //     else
+    //         return "";
+    // }
 
     /* Method to check what assist move input was used */
     protected string getAssistInputKey() {
@@ -122,13 +133,13 @@ public abstract class IMove
     public abstract bool canRun();
 
     /* Method used to execute a move from the player's perspective */
-    public abstract IEnumerator executeMovePlayer(int hDir, int vDir);
+    public abstract IEnumerator executeMovePlayer();
 
     /* Method used to execute a move from an enemy's perspective */
     public abstract IEnumerator executeMoveEnemy(Transform tgt);
 
     /* Method used to execute a move in the context of an assist move */
-    public abstract IEnumerator executeAssistMove(int hDir, int vDir);
+    public abstract IEnumerator executeAssistMove();
 
     /* Method used to regenerate cooldowns / ammo (not used in melee attacks) */
     public abstract void regen();

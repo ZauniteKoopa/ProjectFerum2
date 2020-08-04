@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
-    private const float ASSIST_MOVE_LINGER_TIME = 1f;
+    private const float ASSIST_MOVE_LINGER_TIME = 0.75f;
     private const float MAX_ASSIST_SEQ_DURATION = 3f;
     private const float ENEMY_LINGER_REDUCTION = 0.3f;
     private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
@@ -29,12 +29,18 @@ public class PlayerController : MonoBehaviour
     private int prevMainIndex = -1;                     //Previous main index during assistMoveSequence
     private bool assistDeath;                           //Flag to check if the assist fighter dies
 
+    /* Player mouse scrolling */
+    private const float SCROLL_DELAY_DURATION = 0.07f;
+    private bool scrolled = false;  //Allow for better scroll control when changing abilities
+
     /* Flags */
     private bool dying = false;     //If the main party member is in the middle of dying
 
-    /* UI Variables to update */
+    /* UI Variables */
     [SerializeField]
     private UIResources[] UIStats = new UIResources[3];
+    [SerializeField]
+    private AbilitySelector selector = null;
 
     // Start is called before the first frame update
     void Start()
@@ -73,8 +79,16 @@ public class PlayerController : MonoBehaviour
         if(!dying && fighters[mainIndex].canMove()) {
             movement();
 
-            if (!assistMoveSeq)
+            if (!assistMoveSeq) {
+                
                 attack();
+
+                /* teamwork moves */
+                if(numLiving > 1) {
+                    teamwork();
+                }
+            }
+                
         }
 
         /* Update ability UI regarding player */
@@ -143,34 +157,64 @@ public class PlayerController : MonoBehaviour
 
     /* Helper method for attacking: allows player to attack */
     void attack() {
-        /* Doing your main selected fighter's 3 abilities */
-        if (Input.GetKeyDown(ControlMap.ABILITY_1) && fighters[mainIndex].canUseMove(0)) {
-            StartCoroutine(fighters[mainIndex].executeMovePlayer(0, hDir, vDir));
-        } else if (Input.GetKeyDown(ControlMap.ABILITY_2) && fighters[mainIndex].canUseMove(1)) {
-            StartCoroutine(fighters[mainIndex].executeMovePlayer(1, hDir, vDir));
-        } else if (Input.GetKeyDown(ControlMap.ABILITY_3) && fighters[mainIndex].canUseMove(2)) {
-            StartCoroutine(fighters[mainIndex].executeMovePlayer(2, hDir, vDir));
+        
+        /* Changing abilities via buttons */
+        if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
+            selector.changeSelectAbility(0);
+        } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
+            selector.changeSelectAbility(1);
+        } else if (Input.GetKey(ControlMap.SELECT_ABILITY_3) && fighters[mainIndex].canSelectMove(2)) {
+            selector.changeSelectAbility(2);
         }
 
-        /* Swapping characters and assist moves */
-        if(numLiving > 1) {
+        /* Changing abilities via mouse scroll */
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0 && !scrolled) {
+            StartCoroutine(scrollDelay(true));
+        } else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0 && !scrolled) {
+            StartCoroutine(scrollDelay(false));
+        }
 
-            /* Swapping */
-            if(Input.GetKeyDown(ControlMap.SWAP_LEFT)) {
-                swapFighter(false);
-            }else if(Input.GetKeyDown(ControlMap.SWAP_RIGHT)) {
-                swapFighter(true);
-            }
+        /* Execute ability */
+        int selectedAbility = selector.getMoveIndex();
 
-            /* Assist move */
-            if(curAssist == null) {
-                if(Input.GetKeyDown(ControlMap.ASSIST_MOVE_LEFT)) {
-                    StartCoroutine(executeAssistMove(false));
-                }else if(Input.GetKeyDown(ControlMap.ASSIST_MOVE_RIGHT)) {
-                    StartCoroutine(executeAssistMove(true));
-                }
+        if (Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) {
+            StartCoroutine(fighters[mainIndex].executeMovePlayer(selectedAbility));
+        }
+    }
+
+    /* Helper method for teamwork methods (swapping mainFighters / assist moves */
+    void teamwork() {
+        /* Swapping */
+        if(Input.GetKeyDown(ControlMap.SWAP_LEFT)) {
+            swapFighter(false);
+        }else if(Input.GetKeyDown(ControlMap.SWAP_RIGHT)) {
+            swapFighter(true);
+        }
+
+        /* Assist move */
+        if(curAssist == null) {
+            if(Input.GetKeyDown(ControlMap.ASSIST_MOVE_LEFT)) {
+                StartCoroutine(executeAssistMove(false));
+            }else if(Input.GetKeyDown(ControlMap.ASSIST_MOVE_RIGHT)) {
+                StartCoroutine(executeAssistMove(true));
             }
         }
+    }
+
+
+    //Private helper method with scrolling through secondary moves without doubling on scrolling
+    //  Pre: an item was scrolled through
+    private IEnumerator scrollDelay(bool isRight) {
+        scrolled = true;
+
+        if (isRight) {
+            selector.shiftRight();
+        } else {
+            selector.shiftLeft();
+        }
+
+        yield return new WaitForSecondsRealtime(SCROLL_DELAY_DURATION);
+        scrolled = false;
     }
 
     /* Swap characters method: swapRight == true is adding, else subtracting
@@ -224,12 +268,19 @@ public class PlayerController : MonoBehaviour
         /* Wait until player releases c/v button or takes damage or uses an ability or runs out of time */
         while(holdingAssistKey() && abilityUsed == -1 && enemyNotHitAssist(prevLiving) && assistSeqTimer < MAX_ASSIST_SEQ_DURATION) {
             /* Doing your main selected fighter's 3 abilities */
-            if (Input.GetKeyDown(ControlMap.ABILITY_1) && fighters[mainIndex].canUseMove(0)) {
-                abilityUsed = 0;
-            } else if (Input.GetKeyDown(ControlMap.ABILITY_2) && fighters[mainIndex].canUseMove(1)) {
-                abilityUsed = 1;
-            } else if (Input.GetKeyDown(ControlMap.ABILITY_3) && fighters[mainIndex].canUseMove(2)) {
-                abilityUsed = 2;
+            if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
+                selector.changeSelectAbility(0);
+            } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
+                selector.changeSelectAbility(1);
+            } else if (Input.GetKey(ControlMap.SELECT_ABILITY_3) && fighters[mainIndex].canSelectMove(2)) {
+                selector.changeSelectAbility(2);
+            }
+
+            /* Execute ability */
+            int selectedAbility = selector.getMoveIndex();
+
+            if (Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) {
+                abilityUsed = selectedAbility;
             }
             
             yield return new WaitForSecondsRealtime(0.01f);
@@ -253,7 +304,7 @@ public class PlayerController : MonoBehaviour
 
             /* execute assist move if ability done */
             if (abilityUsed != -1)
-                yield return curAssist.executeAssistMove(abilityUsed, hDir, vDir);
+                yield return curAssist.executeAssistMove(abilityUsed);
 
             /* Have assist linger before going back */
             yield return lingering(); 
@@ -265,6 +316,7 @@ public class PlayerController : MonoBehaviour
         else
             disableAssistFighter(assistIndex);
     }
+
 
     /* Private method for finding the next fighter to swap to or do an assist move
         Pre: numLiving > 1
@@ -292,6 +344,7 @@ public class PlayerController : MonoBehaviour
 
     /* Helper method meant to "rotate" fighter UI so that they align with appropriate fighter */
     private void rotateFighterUI() {
+        selector.changeSelectAbility(0);
 
         for(int i = 0; i < initialNumFighters; i++) {
             //Get a mapping from fighter to UI resources
@@ -391,7 +444,6 @@ public class PlayerController : MonoBehaviour
             numLiving--;
 
             dying = true;
-            fighters[mainIndex].gameObject.SetActive(false);
             fighters[mainIndex] = null;
 
             //Consider cases concerning numLiving

@@ -27,9 +27,9 @@ public class SingleProjCD : CooldownMove
     }
 
     //Allows player to execute move
-    public override IEnumerator executeMovePlayer(int hDir, int vDir) {
+    public override IEnumerator executeMovePlayer() {
         /* Get direction vector */
-        Vector3 dirVect = new Vector3(hDir, vDir, 0);
+        Vector3 dirVect = getVectorToMouse(status.transform);
 
         /* Set properties of projectile and detach from parent*/
         curHitbox = Object.Instantiate(hitbox, status.transform);
@@ -59,8 +59,8 @@ public class SingleProjCD : CooldownMove
     }
 
     //Allows player's assist to execute move
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
-        yield return executeMovePlayer(hDir, vDir);
+    public override IEnumerator executeAssistMove() {
+        yield return executeMovePlayer();
     }
 
     //Enact effects on enemy

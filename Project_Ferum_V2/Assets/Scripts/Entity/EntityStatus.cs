@@ -71,6 +71,8 @@ public class EntityStatus : MonoBehaviour
     private Image armorBar = null;
     [SerializeField]
     private ChannelUI channelBar = null;
+    [SerializeField]
+    private GameObject enemyUISource = null;
     [Space(20)]
 
     /* gameObject Controller to send message to upon death IF NECESSARY */
@@ -239,8 +241,9 @@ public class EntityStatus : MonoBehaviour
 
             if (curHealth <= 0) {               //Case where this entity dies from this move
                 if(tag == GeneralConstants.ENEMY_TAG) {
-                    gameObject.SetActive(false);
+                    death();
                 } else if (tag == GeneralConstants.PLAYER_TAG){
+                    death();
                     controller.SendMessage("OnDeath", this);
                 }
                 
@@ -339,12 +342,23 @@ public class EntityStatus : MonoBehaviour
         }
     }
 
+    /* Method to force this entity to die */
+    public void death() {
+        GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
+
+        if (tag == GeneralConstants.ENEMY_TAG) {
+            enemyUISource.SetActive(false);
+            GetComponent<AbstractEnemy>().enabled = false;
+        }
+    }
+
 
     /* Method used to execute a certain move as player
         Pre: moveID >= 0 && moveID < 3 and move is valid (not null and canRun()).
                 hDir and vDir cannot be 0 at the same time*/
-    public IEnumerator executeMovePlayer(int moveID, int hDir, int vDir) {
-        if((moveID < 0 || moveID >= 3) && (hDir != 0 || vDir != 0))
+    public IEnumerator executeMovePlayer(int moveID) {
+        if(moveID < 0 || moveID >= 3)
             throw new System.Exception("Error: Invalid move ID");
 
         /* Set attacking to true */
@@ -354,7 +368,7 @@ public class EntityStatus : MonoBehaviour
         IMove curMove = moves[moveID];
         movingDisabled = shieldStunned || curMove.isMovementDisabled();
 
-        yield return curMove.executeMovePlayer(hDir, vDir);
+        yield return curMove.executeMovePlayer();
 
         /* Set flag variables back to false */
         movingDisabled = shieldStunned;
@@ -383,8 +397,8 @@ public class EntityStatus : MonoBehaviour
     }
 
     /* Method used to execute move as an assist move */
-    public IEnumerator executeAssistMove(int moveID, int hDir, int vDir) {
-        if((moveID < 0 || moveID >= 3) && (hDir != 0 || vDir != 0))
+    public IEnumerator executeAssistMove(int moveID) {
+        if(moveID < 0 || moveID >= 3)
             throw new System.Exception("Error: Invalid move ID");
 
         /* Set attacking to true */
@@ -394,7 +408,7 @@ public class EntityStatus : MonoBehaviour
         IMove curMove = moves[moveID];
         movingDisabled = shieldStunned || curMove.isMovementDisabled();
 
-        yield return curMove.executeAssistMove(hDir, vDir);
+        yield return curMove.executeAssistMove();
 
         /* Set flag variables back to false */
         movingDisabled = shieldStunned;
@@ -512,5 +526,14 @@ public class EntityStatus : MonoBehaviour
             else
                 resources.abilities[i].setNone();
         }
+    }
+
+    /* Helper method to check if move can be selected
+        A move can be selected IFF the move slot is not null */
+    public bool canSelectMove(int moveID) {
+        if(moveID < 0 || moveID >= 3)
+            return false;
+        
+        return moves[moveID] != null;
     }
 }

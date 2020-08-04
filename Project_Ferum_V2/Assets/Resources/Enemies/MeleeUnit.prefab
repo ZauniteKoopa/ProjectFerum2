@@ -1259,6 +1259,7 @@ MonoBehaviour:
   healthBar: {fileID: 4633729082702608086}
   armorBar: {fileID: 4633729083198154650}
   channelBar: {fileID: 4633729082025028288}
+  enemyUISource: {fileID: 4633729082548799700}
   controller: {fileID: 0}
 --- !u!1 &4633729083374240691
 GameObject:

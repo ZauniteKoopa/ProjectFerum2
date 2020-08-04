@@ -26,12 +26,10 @@ public class BulletMove : AmmoMove
     }
 
     /* Allows player to shoot */
-    public override IEnumerator executeMovePlayer(int hDir, int vDir) {
-        string input = getInputKey();
-
-        while(Input.GetKey(input) && canRun() && !myStatus.armorBroke()) {
+    public override IEnumerator executeMovePlayer() {
+        while(Input.GetMouseButton(0) && canRun() && !myStatus.armorBroke()) {
             /* Get direction vector */
-            Vector3 dirVect = new Vector3(hDir, vDir, 0);
+            Vector3 dirVect = getVectorToMouse(myStatus.transform);
 
             /* Set properties of projectile and detach from parent*/
             Transform curBullet = Object.Instantiate(hitbox, myStatus.transform);
@@ -77,15 +75,13 @@ public class BulletMove : AmmoMove
     /* IEnumerator that allows player to use this move as an assist move */
     private const int ASSIST_SHOTS = 4;
 
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
-        // calculate how many shots fired
-        string input = getAssistInputKey();
+    public override IEnumerator executeAssistMove() {
+        // calculate how many shots fired and get dir Vector
         int curShot = 0;
+        Vector3 dirVect = getVectorToMouse(myStatus.transform);
 
-        while(canRun() && Input.GetKey(input) && !myStatus.armorBroke()) {
-            /* Get direction vector */
-            Vector3 dirVect = new Vector3(hDir, vDir, 0);
-
+        //Loop to run bullets
+        while(canRun() && curShot < ASSIST_SHOTS && !myStatus.armorBroke()) {
             /* Set properties of projectile and detach from parent*/
             Transform curBullet = Object.Instantiate(hitbox, myStatus.transform);
             curBullet.tag = assignHitboxTag(myStatus.tag);

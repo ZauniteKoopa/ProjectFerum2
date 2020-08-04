@@ -50,8 +50,32 @@ public abstract class ChannelMove : CooldownMove
     }
 
     //Method to execute as a main fighter for player
-    public override IEnumerator executeMovePlayer(int hDir, int vDir) {
-        yield return executeMovePlayerHelper(getInputKey());
+    public override IEnumerator executeMovePlayer() {
+        Color prevColor = status.GetComponent<SpriteRenderer>().color;
+        status.GetComponent<SpriteRenderer>().color = Color.magenta;
+        status.setChannelActive(true);
+        charging = true;
+        status.setChannelProgress(curChannel, maxChannel);
+
+        //Channel
+        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetMouseButton(0) && curChannel < maxChannel) {
+            yield return new WaitForFixedUpdate();
+
+            curChannel += Time.deltaTime;
+            status.setChannelProgress(curChannel, maxChannel);
+        }
+
+        //Dismantle channeling stage
+        status.GetComponent<SpriteRenderer>().color = prevColor;
+        status.setChannelActive(false);
+        charging = false;
+
+        //Check for success case
+        if (curChannel >= maxChannel) {
+            curChannel = 0f;
+            executeFinishedChannel();
+            startCDTimer();
+        }
     }
 
     // Method to execute as an enemy
@@ -84,12 +108,8 @@ public abstract class ChannelMove : CooldownMove
     }
 
     //Method to execute move as an assist fighter for player
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
-        yield return executeMovePlayerHelper(getAssistInputKey());
-    }
-
-    //Helper method that allows execution on both player's mainFighter and assistFighter
-    private IEnumerator executeMovePlayerHelper(string input) {
+    public override IEnumerator executeAssistMove() {
+        string input = getAssistInputKey();
         Color prevColor = status.GetComponent<SpriteRenderer>().color;
         status.GetComponent<SpriteRenderer>().color = Color.magenta;
         status.setChannelActive(true);
@@ -97,7 +117,7 @@ public abstract class ChannelMove : CooldownMove
         status.setChannelProgress(curChannel, maxChannel);
 
         //Channel
-        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetKey(input) && curChannel < maxChannel) {
+        while (!status.armorBroke() && status.getHealth() > 0 && !Input.GetKeyDown(input) && curChannel < maxChannel) {
             yield return new WaitForFixedUpdate();
 
             curChannel += Time.deltaTime;

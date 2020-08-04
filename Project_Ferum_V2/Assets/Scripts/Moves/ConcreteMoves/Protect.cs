@@ -17,10 +17,7 @@ public class Protect : CooldownMove
     }
 
     //Allows player to run move
-    public override IEnumerator executeMovePlayer(int hDir, int vDir) {
-        //Get input
-        string input = getInputKey();
-        
+    public override IEnumerator executeMovePlayer() {        
         //Get color info
         SpriteRenderer render = status.GetComponent<SpriteRenderer>();
         Color prevColor = render.color;
@@ -30,7 +27,7 @@ public class Protect : CooldownMove
         float timer = 0f;
         status.setInvincibility(true);
 
-        while (timer < PROTECT_DURATION && Input.GetKey(input)) {
+        while (timer < PROTECT_DURATION && Input.GetMouseButton(0)) {
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
         }
@@ -61,7 +58,7 @@ public class Protect : CooldownMove
     }
 
     //Allow player to use move as an assist
-    public override IEnumerator executeAssistMove(int hDir, int vDir) {
+    public override IEnumerator executeAssistMove() {
         yield return executeMoveEnemy(null);
         startCDTimer();
     }
