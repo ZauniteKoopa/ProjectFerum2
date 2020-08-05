@@ -46,7 +46,7 @@ public class BulletMove : AmmoMove
     }
 
     /* IEnumerator that allows an enemy / AI to attack */
-    private const int MIN_SHOTS = 2;
+    private const int MIN_SHOTS = 4;
     private const int MAX_SHOTS = 5;
 
     public override IEnumerator executeMoveEnemy(Transform tgt) {

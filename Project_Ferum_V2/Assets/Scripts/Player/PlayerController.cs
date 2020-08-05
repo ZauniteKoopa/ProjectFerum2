@@ -267,13 +267,20 @@ public class PlayerController : MonoBehaviour
 
         /* Wait until player releases c/v button or takes damage or uses an ability or runs out of time */
         while(holdingAssistKey() && abilityUsed == -1 && enemyNotHitAssist(prevLiving) && assistSeqTimer < MAX_ASSIST_SEQ_DURATION) {
-            /* Doing your main selected fighter's 3 abilities */
+            /* Select Abilities doing quick select */
             if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
                 selector.changeSelectAbility(0);
             } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
                 selector.changeSelectAbility(1);
             } else if (Input.GetKey(ControlMap.SELECT_ABILITY_3) && fighters[mainIndex].canSelectMove(2)) {
                 selector.changeSelectAbility(2);
+            }
+
+            /* Changing abilities via mouse scroll */
+            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0 && !scrolled) {
+                StartCoroutine(scrollDelay(true));
+            } else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0 && !scrolled) {
+                StartCoroutine(scrollDelay(false));
             }
 
             /* Execute ability */
@@ -352,10 +359,29 @@ public class PlayerController : MonoBehaviour
 
             if (fighters[i] != null) {
                 fighters[i].setUpUI(UIStats[assignedUI]);
-            } else {
-                UIStats[assignedUI].setDead();
-            }
 
+                //Change character icon
+                if (assignedUI != 0) {
+                    Color fighterColor = fighters[i].GetComponent<SpriteRenderer>().color;
+                    UIStats[assignedUI].changeIcon(fighterColor);
+                }
+
+            } else {
+                //Check if this is an assist fighter case
+                if (curAssist != null && assistIndex == i) {
+                    curAssist.setUpUI(UIStats[assignedUI]);
+
+                    //Change character icon
+                    if (assignedUI != 0) {
+                        Color fighterColor = curAssist.GetComponent<SpriteRenderer>().color;
+                        UIStats[assignedUI].changeIcon(fighterColor);
+                    }
+
+                } else {
+                    UIStats[assignedUI].setDead();
+                }
+                
+            }
         }
     }
 
@@ -377,8 +403,6 @@ public class PlayerController : MonoBehaviour
             if (curAssist.isAssistCancelled()) {
                 float newLinger = lingerTime - ENEMY_LINGER_REDUCTION;
                 lingerTime = (newLinger >= 0f) ? newLinger : 0f;
-
-                Debug.Log("welp");
                 curAssist.resetAssistStatus(); 
             }
         }

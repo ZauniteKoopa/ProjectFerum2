@@ -33,9 +33,9 @@ public class PulseBehav : BurstProjBehav
         }
 
         /* Behavior when wall is hit */
-        if(tgt.tag == GeneralConstants.WALL_TAG) {
-            triggerSplashHitbox();
-        }
+        // if(tgt.tag == GeneralConstants.WALL_TAG) {
+        //     triggerSplashHitbox();
+        // }
 
         /* Behavior when hit by any attack */
         if (hitAttackMutual(tgt.tag) && !invincible) {

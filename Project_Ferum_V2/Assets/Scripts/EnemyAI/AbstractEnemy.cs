@@ -17,6 +17,9 @@ public abstract class AbstractEnemy : MonoBehaviour
     private float attackTimer;
     private bool canAttack;
 
+    //Flag to indicate death
+    private bool dead = false;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -31,7 +34,7 @@ public abstract class AbstractEnemy : MonoBehaviour
     {
         status.regenBars();
 
-        if (status.canMove()) {
+        if (status.canMove() && !dead) {
             movement();
 
             /* Attack timer */
@@ -64,18 +67,25 @@ public abstract class AbstractEnemy : MonoBehaviour
 
     //Method meant to react to player's presence or player attack presence when nearby
     public void react(Collider2D tgt) {
-        bool moveUsed = false;
+        if (status.canMove() && !dead) {
+            bool moveUsed = false;
 
-        if (tgt.tag == GeneralConstants.PLAYER_ATTK_TAG) {
-            moveUsed = reactToAttack(tgt.transform);
-        } else if (tgt.tag == GeneralConstants.PLAYER_TAG){
-            moveUsed = reactToPlayer();
-        }
+            if (tgt.tag == GeneralConstants.PLAYER_ATTK_TAG) {
+                moveUsed = reactToAttack(tgt.transform);
+            } else if (tgt.tag == GeneralConstants.PLAYER_TAG){
+                moveUsed = reactToPlayer();
+            }
 
-        //If move used, reduce attack timer by half
-        if (moveUsed) {
-            attackTimer *= 0.5f;
+            //If move used, reduce attack timer by half
+            if (moveUsed) {
+                attackTimer *= 0.5f;
+            }
         }
+    }
+
+    //Method to kill enemy AI
+    public void kill() {
+        dead = true;
     }
 
     //Method to get this entity's movement speed

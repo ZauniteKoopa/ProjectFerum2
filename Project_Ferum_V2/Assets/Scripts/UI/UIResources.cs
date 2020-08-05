@@ -10,6 +10,9 @@ public class UIResources : MonoBehaviour
     [SerializeField]
     public Image healthBar, armorBar;
 
+    [SerializeField]
+    private Image characterIcon = null;
+
     //An array of 3 abiities
     public UIAbility[] abilities = new UIAbility[3];
 
@@ -21,6 +24,10 @@ public class UIResources : MonoBehaviour
         for(int i = 0; i < abilities.Length; i++) {
             abilities[i].setNone();
         }
+
+        if (characterIcon != null){
+            characterIcon.color = Color.black;
+        }
     }
 
     //Disable UI Resources when not being used
@@ -28,5 +35,9 @@ public class UIResources : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    //Change Character Icon
+    public void changeIcon(Color color) {
+        characterIcon.color = color;
+    }
 
 }

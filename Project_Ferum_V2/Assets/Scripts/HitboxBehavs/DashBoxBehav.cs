@@ -25,11 +25,6 @@ public class DashBoxBehav : Hitbox
             deactivateHitbox();
         }
 
-        /* Behavior when wall is hit */
-        if(tgt.tag == GeneralConstants.WALL_TAG) {
-            applyEffects(null);
-        }
-
         /* Behavior when hitting another attack */
         if (hitAttack(tgt) && overpoweredBy(tgt.GetComponent<Hitbox>())) {
             applyEffects(null);

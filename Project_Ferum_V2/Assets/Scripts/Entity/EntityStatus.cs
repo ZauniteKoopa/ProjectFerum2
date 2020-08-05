@@ -239,19 +239,14 @@ public class EntityStatus : MonoBehaviour
             curArmor -= (damage * 3) / 2;
             assistCancelled = true;
 
+            //Update player UI Bars
+            healthBar.fillAmount = (float)curHealth / (float)maxHealth;
+            armorBar.fillAmount = (float)curArmor / (float)maxArmor;
+
             if (curHealth <= 0) {               //Case where this entity dies from this move
-                if(tag == GeneralConstants.ENEMY_TAG) {
-                    death();
-                } else if (tag == GeneralConstants.PLAYER_TAG){
-                    death();
-                    controller.SendMessage("OnDeath", this);
-                }
-                
+                death();
                 return false;
             }else{                              //Case where entity still lives 
-                //Update player UI Bars
-                healthBar.fillAmount = (float)curHealth / (float)maxHealth;
-                armorBar.fillAmount = (float)curArmor / (float)maxArmor;
 
                 /* Reset regen timers */
                 aTimer = 0f;
@@ -349,7 +344,11 @@ public class EntityStatus : MonoBehaviour
 
         if (tag == GeneralConstants.ENEMY_TAG) {
             enemyUISource.SetActive(false);
-            GetComponent<AbstractEnemy>().enabled = false;
+            GetComponent<AbstractEnemy>().kill();
+        }
+
+        if (tag == GeneralConstants.PLAYER_TAG) {
+            controller.SendMessage("OnDeath", this);
         }
     }
 

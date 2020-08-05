@@ -64,7 +64,7 @@ public class FastRanger : AbstractEnemy
     void OnCollisionEnter2D(Collision2D collision) {
         Collider2D collider = collision.collider;
 
-        if (collider.tag == "Platform" || collider.tag == "Player")
+        if (collider.tag == GeneralConstants.WALL_TAG || collider.tag == GeneralConstants.PLAYER_TAG)
             ccw = (ccw) ? false : true;
     }
 
@@ -75,7 +75,7 @@ public class FastRanger : AbstractEnemy
     void OnCollision2DStay(Collision2D collision) {
         Collider2D wall = collision.collider;
 
-        if(GetComponent<Collider>().tag == "Platform") {
+        if(GetComponent<Collider>().tag == GeneralConstants.WALL_TAG) {
             stayTimer += Time.deltaTime;
 
             if(stayTimer >= WALL_STAY) {
