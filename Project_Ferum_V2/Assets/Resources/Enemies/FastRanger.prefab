@@ -1096,7 +1096,7 @@ GameObject:
   - component: {fileID: 3138875862785612312}
   - component: {fileID: 3138875862785612315}
   - component: {fileID: 3138875862785612318}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FastRanger
   m_TagString: Enemy
   m_Icon: {fileID: 0}

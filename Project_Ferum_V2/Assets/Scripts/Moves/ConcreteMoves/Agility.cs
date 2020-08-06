@@ -6,7 +6,7 @@ public class Agility : StatEffectChannel
 {
     //Move properties
     private const float COOLDOWN = 13.5f;
-    private const float CHANNEL_TIME = 2f;
+    private const float CHANNEL_TIME = 1f;
 
     //Stat effect properties
     private const int STAT_ID = (int)GeneralConstants.statIDs.SPEED;

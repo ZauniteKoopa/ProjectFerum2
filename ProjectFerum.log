@@ -1,3 +1,9 @@
+commit a7f572d4ec16bf5198e9e67047d3566fc33626ac
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Wed Aug 5 14:01:13 2020 -0500
+
+    Updated UI for better visibility and fixed bugs regarding enemy AI (when stunned / dead) and player UI when swapping during assist moves
+
 commit 93e2164a7565c2031143dc6951085bc9f7bfb7be
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Tue Aug 4 14:33:41 2020 -0500

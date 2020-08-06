@@ -5,10 +5,10 @@ using UnityEngine;
 public class AquaTail : CircleAoE
 {
     //Constants for this move
-    private const float COOLDOWN = 3f;
+    private const float COOLDOWN = 0.8f;
     private const bool MOVE_DISABLED = false;
 
-    private const int PWR = 40;
+    private const int PWR = 25;
     private const float KB = 400f;
     private const bool IS_PHY = true;
 

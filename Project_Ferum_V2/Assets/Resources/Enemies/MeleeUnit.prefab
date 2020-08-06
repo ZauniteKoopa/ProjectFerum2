@@ -1096,7 +1096,7 @@ GameObject:
   - component: {fileID: 4633729083249110710}
   - component: {fileID: 4633729083249110711}
   - component: {fileID: 4633729083249110708}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: MeleeUnit
   m_TagString: Enemy
   m_Icon: {fileID: 0}

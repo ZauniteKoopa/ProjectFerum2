@@ -5,10 +5,10 @@ using UnityEngine;
 public class FlameBurst : BulletMove
 {
     //Move parameters
-    private const int PWR = 20;
-    private const int MAX_AMMO = 12;
-    private const float REGEN_RATE = 2.25f;
-    private const float FIRE_RATE = 0.5f;
+    private const int PWR = 15;
+    private const int MAX_AMMO = 5;
+    private const float REGEN_RATE = 3.5f;
+    private const float FIRE_RATE = 0.75f;
     private const bool IS_PHY = false;
 
     //Constructor

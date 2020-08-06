@@ -304,7 +304,7 @@ public class EntityStatus : MonoBehaviour
     }
 
     /* Method for armor shattering */
-    private const float ARMOR_SHATTER_DURATION_ENEMY = 2.5f;
+    private const float ARMOR_SHATTER_DURATION_ENEMY = 3f;
     private const float ARMOR_SHATTER_DURATION_PLAYER = 1.75f;
 
     IEnumerator shieldStun() {

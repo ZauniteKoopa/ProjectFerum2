@@ -20,17 +20,19 @@ public class PlayerController : MonoBehaviour
 
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
-    private const float ASSIST_MOVE_LINGER_TIME = 0.75f;
-    private const float MAX_ASSIST_SEQ_DURATION = 3f;
+    private const float ASSIST_MOVE_LINGER_TIME = 0.5f;
+    private const float MAX_ASSIST_SEQ_DURATION = 2.5f;
     private const float ENEMY_LINGER_REDUCTION = 0.3f;
     private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
     private int assistIndex = -1;                       //Index of assist fighter before doing assistMoves
     private EntityStatus curAssist = null;              //The current assist fighter
     private int prevMainIndex = -1;                     //Previous main index during assistMoveSequence
     private bool assistDeath;                           //Flag to check if the assist fighter dies
+    [SerializeField]
+    private ChannelUI assistTimerUI = null;
 
     /* Player mouse scrolling */
-    private const float SCROLL_DELAY_DURATION = 0.07f;
+    private const float SCROLL_DELAY_DURATION = 0.085f;
     private bool scrolled = false;  //Allow for better scroll control when changing abilities
 
     /* Flags */
@@ -258,6 +260,8 @@ public class PlayerController : MonoBehaviour
         curAssist.transform.parent = null;
         numLiving--;
         rotateFighterUI();
+        assistTimerUI.setActive(true);
+        assistTimerUI.setChannel(1, 1);
 
         int abilityUsed = -1;       //If this number is still -1, no ability used
         int prevLiving = numLiving;
@@ -291,7 +295,10 @@ public class PlayerController : MonoBehaviour
             }
             
             yield return new WaitForSecondsRealtime(0.01f);
+
+            /* Update timer and set up UI */
             assistSeqTimer += 0.01f;
+            assistTimerUI.setChannel(MAX_ASSIST_SEQ_DURATION - assistSeqTimer, MAX_ASSIST_SEQ_DURATION);
         }
 
         //If an ability is used or curAssist was damaged, have the assist linger
@@ -303,6 +310,7 @@ public class PlayerController : MonoBehaviour
         Time.timeScale = 1.0f;
         assistMoveSeq = false;
         rotateFighterUI();
+        assistTimerUI.setActive(false);
 
         /* In the case where you do linger */
         if (linger && !assistDeath) {
