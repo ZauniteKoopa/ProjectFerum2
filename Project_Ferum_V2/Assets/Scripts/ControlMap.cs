@@ -17,9 +17,9 @@ public static class ControlMap
     public const string ASSIST_MOVE_RIGHT = "v";
 
     //Ability selection
+    public const string CHANGE_SELECT = "left shift";
     public const string SELECT_ABILITY_1 = "1";
     public const string SELECT_ABILITY_2 = "2";
-    public const string SELECT_ABILITY_3 = "3";
 
     //Abilities (TO BE DELETED)
     public const string ABILITY_1 = "u";

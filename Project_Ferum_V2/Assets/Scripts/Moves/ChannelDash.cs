@@ -44,6 +44,7 @@ public class ChannelDash : CooldownMove
     public override IEnumerator executeMovePlayer() {
         //Set up channel
         curChannel = 0f;
+        int mouseInput = getMouseInputKey();
         Color prevColor = status.GetComponent<SpriteRenderer>().color;
 
         status.setUnflinching(true);
@@ -51,7 +52,7 @@ public class ChannelDash : CooldownMove
         status.GetComponent<SpriteRenderer>().color = Color.magenta;
 
         //Channel loop
-        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetMouseButton(0)) {
+        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetMouseButton(mouseInput)) {
             yield return new WaitForFixedUpdate();
 
             /* Update channel and associated UI */

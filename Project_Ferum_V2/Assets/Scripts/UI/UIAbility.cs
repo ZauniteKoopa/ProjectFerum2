@@ -25,7 +25,10 @@ public class UIAbility : MonoBehaviour
     }
 
     public void setNone() {
-        cd.fillAmount = 1f;
-        ammo.text = "";
+        gameObject.SetActive(false);
+    }
+
+    public void setActive() {
+        gameObject.SetActive(true);
     }
 }

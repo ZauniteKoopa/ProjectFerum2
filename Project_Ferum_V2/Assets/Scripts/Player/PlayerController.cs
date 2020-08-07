@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private EntityStatus[] fighters = new EntityStatus[MAX_NUM_FIGHTERS];
     private int mainIndex = 0;
     private int numLiving = 0;
+    private const int SEC_MOVE_INDEX = 2;
 
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
@@ -165,8 +166,10 @@ public class PlayerController : MonoBehaviour
             selector.changeSelectAbility(0);
         } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
             selector.changeSelectAbility(1);
-        } else if (Input.GetKey(ControlMap.SELECT_ABILITY_3) && fighters[mainIndex].canSelectMove(2)) {
-            selector.changeSelectAbility(2);
+        } 
+
+        if (Input.GetKeyDown(ControlMap.CHANGE_SELECT) && !scrolled) {
+            StartCoroutine(scrollDelay(true));
         }
 
         /* Changing abilities via mouse scroll */
@@ -181,6 +184,10 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) {
             StartCoroutine(fighters[mainIndex].executeMovePlayer(selectedAbility));
+        }
+
+        if (Input.GetMouseButtonDown(1) && fighters[mainIndex].canUseMove(SEC_MOVE_INDEX)) {
+            StartCoroutine(fighters[mainIndex].executeMovePlayer(2));
         }
     }
 
@@ -276,8 +283,10 @@ public class PlayerController : MonoBehaviour
                 selector.changeSelectAbility(0);
             } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
                 selector.changeSelectAbility(1);
-            } else if (Input.GetKey(ControlMap.SELECT_ABILITY_3) && fighters[mainIndex].canSelectMove(2)) {
-                selector.changeSelectAbility(2);
+            }
+
+            if (Input.GetKeyDown(ControlMap.CHANGE_SELECT) && !scrolled) {
+                StartCoroutine(scrollDelay(true));
             }
 
             /* Changing abilities via mouse scroll */
@@ -287,11 +296,16 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(scrollDelay(false));
             }
 
-            /* Execute ability */
+            /* Execute primary ability */
             int selectedAbility = selector.getMoveIndex();
 
             if (Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) {
                 abilityUsed = selectedAbility;
+            }
+
+            /* execute secondary ability */
+            if (Input.GetMouseButtonDown(1) && fighters[mainIndex].canUseMove(SEC_MOVE_INDEX)) {
+                abilityUsed = SEC_MOVE_INDEX;
             }
             
             yield return new WaitForSecondsRealtime(0.01f);
@@ -359,7 +373,7 @@ public class PlayerController : MonoBehaviour
 
     /* Helper method meant to "rotate" fighter UI so that they align with appropriate fighter */
     private void rotateFighterUI() {
-        selector.changeSelectAbility(0);
+        selector.setToFighter(fighters[mainIndex].getNumMoves());
 
         for(int i = 0; i < initialNumFighters; i++) {
             //Get a mapping from fighter to UI resources

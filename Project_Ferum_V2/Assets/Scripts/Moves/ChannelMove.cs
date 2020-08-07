@@ -56,9 +56,10 @@ public abstract class ChannelMove : CooldownMove
         status.setChannelActive(true);
         charging = true;
         status.setChannelProgress(curChannel, maxChannel);
+        int mouseInput = getMouseInputKey();
 
         //Channel
-        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetMouseButton(0) && curChannel < maxChannel) {
+        while (!status.armorBroke() && status.getHealth() > 0 && Input.GetMouseButton(mouseInput) && curChannel < maxChannel) {
             yield return new WaitForFixedUpdate();
 
             curChannel += Time.deltaTime;

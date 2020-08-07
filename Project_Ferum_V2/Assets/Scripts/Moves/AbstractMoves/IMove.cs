@@ -103,16 +103,14 @@ public abstract class IMove
     }
 
     /* Method to check what input was used for this move */
-    // protected string getInputKey() {
-    //     if (Input.GetKey(ControlMap.ABILITY_1))
-    //         return ControlMap.ABILITY_1;
-    //     else if (Input.GetKey(ControlMap.ABILITY_2))
-    //         return ControlMap.ABILITY_2;
-    //     else if (Input.GetKey(ControlMap.ABILITY_3))
-    //         return ControlMap.ABILITY_3;
-    //     else
-    //         return "";
-    // }
+    protected int getMouseInputKey() {
+        if (Input.GetMouseButton(0))
+            return 0;
+        else if (Input.GetMouseButton(1))
+            return 1;
+        else
+            return 2;
+    }
 
     /* Method to check what assist move input was used */
     protected string getAssistInputKey() {

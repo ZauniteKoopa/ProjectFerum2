@@ -9,6 +9,8 @@ public class AbilitySelector : MonoBehaviour
     private GameObject[] selections = new GameObject[3];
     private int moveIndex = 0;
 
+    private int numMoves = 0;
+
     //Method to change
     public void changeSelectAbility(int index) {
         Debug.Assert(index >= 0 && index < 3);
@@ -23,18 +25,24 @@ public class AbilitySelector : MonoBehaviour
 
     //Method to shift left
     public void shiftLeft() {
-        int newIndex = (moveIndex - 1 + 3) % 3;
+        int newIndex = (moveIndex - 1 + numMoves) % numMoves;
         changeSelectAbility(newIndex);
     }
 
     //Method to shift right
     public void shiftRight() {
-        int newIndex = (moveIndex + 1 + 3) % 3;
+        int newIndex = (moveIndex + 1 + numMoves) % numMoves;
         changeSelectAbility(newIndex);
     }
 
     //Accessor method for moveIndex
     public int getMoveIndex() {
         return moveIndex;
+    }
+
+    //Reset selector to fighter
+    public void setToFighter(int fighterMoves) {
+        numMoves = fighterMoves;
+        changeSelectAbility(0);
     }
 }

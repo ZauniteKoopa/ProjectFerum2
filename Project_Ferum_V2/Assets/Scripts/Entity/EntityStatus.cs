@@ -37,6 +37,7 @@ public class EntityStatus : MonoBehaviour
     [SerializeField]
     private string[] moveNames = null;
     private IMove[] moves = new IMove[3];
+    private int numPrimaryMoves = 0;
     [Space(20)]
 
     /* Stat effects - to be added */
@@ -44,8 +45,8 @@ public class EntityStatus : MonoBehaviour
 
     /* Health regen variables */
     private float hTimer = 0f;
-    private const float HP_REGEN_PERCENT = 0.02f;
-    private const float HP_REGEN_RATE = 3f;
+    private const float HP_REGEN_PERCENT = 0.01f;
+    private const float HP_REGEN_RATE = 4f;
 
     /* Armor regen variables */
     private float aTimer = 0f;
@@ -162,7 +163,15 @@ public class EntityStatus : MonoBehaviour
         channelBar.setChannel(cur, max);
     }
 
+    /* Accessor method for number of primary moves: either 1 or 2 */
+    public int getNumMoves() {
+        return numPrimaryMoves;
+    }
 
+    /* Accessor method to tell if player has a secMove (ONLY PLAYER) */
+    public bool hasSecMove() {
+        return moves[2] != null;
+    }
 
 
     //  ---------------------
@@ -180,6 +189,9 @@ public class EntityStatus : MonoBehaviour
         /* Sets moves for this entity by looking at its moveNames */
         for(int i = 0; i < moveNames.Length; i++) {
             moves[i] = nameToMove(moveNames[i]);
+
+            if (moves[i] != null && i != moveNames.Length - 1)
+                numPrimaryMoves++;
         }
     }
 
@@ -520,10 +532,13 @@ public class EntityStatus : MonoBehaviour
 
         /* Set up abilities */
         for(int i = 0; i < resources.abilities.Length; i++) {
-            if (moves[i] != null)
+            if (moves[i] != null) {
+                resources.abilities[i].setActive();
                 moves[i].setUpUI(resources.abilities[i]);
-            else
+            }else {
                 resources.abilities[i].setNone();
+            }
+                
         }
     }
 

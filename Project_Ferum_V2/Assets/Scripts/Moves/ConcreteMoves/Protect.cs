@@ -27,6 +27,7 @@ public class Protect : CooldownMove
         render.color = Color.gray;
 
         //Set up loop and begin duration
+        int mouseInput = getMouseInputKey();
         float timer = 0f;
         status.setInvincibility(true);
         hitbox.GetComponent<DashBoxBehav>().activateHitbox(assignHitboxTag(status.tag), this, PROTECT_PRIORITY);
@@ -34,7 +35,7 @@ public class Protect : CooldownMove
         //Channel UI
         status.setChannelActive(true);
 
-        while (timer < PROTECT_DURATION && Input.GetMouseButton(0)) {
+        while (timer < PROTECT_DURATION && Input.GetMouseButton(mouseInput)) {
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
             status.setChannelProgress(PROTECT_DURATION - timer, PROTECT_DURATION);

@@ -27,7 +27,9 @@ public class BulletMove : AmmoMove
 
     /* Allows player to shoot */
     public override IEnumerator executeMovePlayer() {
-        while(Input.GetMouseButton(0) && canRun() && !myStatus.armorBroke()) {
+        int mouseInput = getMouseInputKey();
+
+        while(Input.GetMouseButton(mouseInput) && canRun() && !myStatus.armorBroke()) {
             /* Get direction vector */
             Vector3 dirVect = getVectorToMouse(myStatus.transform);
 
