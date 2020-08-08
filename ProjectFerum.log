@@ -1,3 +1,15 @@
+commit 67b8496b6f5bf6f1f43731f0afd8d74de1b5f7fd
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Fri Aug 7 10:59:13 2020 -0500
+
+    Change control scheme to include secondary ability AND only 2 primary abilities. Also changed some UI to match
+
+commit 35ba0ced27fe3732cd4f4383b2220d88b929264a
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Thu Aug 6 14:29:40 2020 -0500
+
+    Worked on small buffs and debuffs for moves, edited enemy collision
+
 commit a7f572d4ec16bf5198e9e67047d3566fc33626ac
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Wed Aug 5 14:01:13 2020 -0500

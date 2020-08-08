@@ -15,6 +15,10 @@ public class BulletMove : AmmoMove
     /* Variables indicating if the move is physical or not */
     private bool isPhy;
 
+    //Timer to allow small recharge
+    private float rechargeTimer;
+    private bool recharging;
+
 
     /* Bullet Seed Constructor */
     public BulletMove(EntityStatus entity, int pwr, int maxAmmo, float regenRate, float fr, bool isPhysical, string hitboxSrc) : base(maxAmmo, regenRate, false) {
@@ -23,11 +27,33 @@ public class BulletMove : AmmoMove
         fireRate = fr;
         isPhy = isPhysical;
         power = pwr;
+
+        rechargeTimer = 0f;
+        recharging = false;
+    }
+
+    /* Allow for recharge */
+    public override void regen() {
+        base.regen();
+
+        if (recharging) {
+            rechargeTimer += Time.deltaTime;
+
+            if (rechargeTimer >= fireRate) {
+                rechargeTimer = 0f;
+                recharging = false;
+            }
+        }
     }
 
     /* Allows player to shoot */
     public override IEnumerator executeMovePlayer() {
         int mouseInput = getMouseInputKey();
+
+        //If weapon is recharging, wait for weapon to recharge
+        while (Input.GetMouseButton(mouseInput) && recharging) {
+            yield return new WaitForFixedUpdate();
+        }
 
         while(Input.GetMouseButton(mouseInput) && canRun() && !myStatus.armorBroke()) {
             /* Get direction vector */
@@ -43,7 +69,17 @@ public class BulletMove : AmmoMove
             useAmmo();
 
             /* Wait for next chance to fire */
-            yield return new WaitForSeconds(fireRate); 
+            float fireRateTimer = 0f;
+            while (Input.GetMouseButton(mouseInput) && fireRateTimer < fireRate) {
+                yield return new WaitForFixedUpdate();
+                fireRateTimer += Time.deltaTime;
+            }
+
+            /* If cancelled early: set RechargeTimer to fireRate timer */
+            if (fireRateTimer < fireRate) {
+                rechargeTimer = fireRateTimer;
+                recharging = true;
+            }
         }
     }
 
