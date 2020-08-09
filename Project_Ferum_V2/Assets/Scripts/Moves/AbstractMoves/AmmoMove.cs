@@ -11,6 +11,7 @@ public abstract class AmmoMove : IMove
     /* Ammo regen rate (every X seconds) */
     private float regenRate;
     private float regenTimer;
+    private const float FULL_RECHARGE_FACTOR = 2f;
 
     /* Ammo move constructor */
     public AmmoMove(int MAX_AMMO, float REGEN_RATE, bool moveDisabled) : base(moveDisabled) {
@@ -26,8 +27,12 @@ public abstract class AmmoMove : IMove
         if (curAmmo < maxAmmo) {
             regenTimer += Time.deltaTime;
 
-            /* Increment current ammo count by one once passed regen rate */
-            if (regenTimer >= regenRate) {
+            /* Regen timer */
+            if (curAmmo == 0 && regenTimer >= regenRate * FULL_RECHARGE_FACTOR) {
+                curAmmo = (maxAmmo * 3) / 5;         //Will refill 60% of ammo gained
+                regenTimer = 0f;
+
+            } else if (curAmmo > 0 && regenTimer >= regenRate) {
                 curAmmo = (curAmmo == maxAmmo) ? maxAmmo : curAmmo + 1;
                 regenTimer = 0f;
             }
@@ -41,18 +46,25 @@ public abstract class AmmoMove : IMove
 
     /* Method to update UI */
     public override void updateMoveUI(UIAbility icon) {
+        float fill = (curAmmo == 0) ? regenTimer / (FULL_RECHARGE_FACTOR * regenRate) : 1f;
+        icon.setCooldownUI(fill);
         icon.setAmmo(curAmmo);
     }
 
     /* Method to set up UI */
     public override void setUpUI(UIAbility icon) {
-        icon.setCooldownUI(1f);
+        float fill = (curAmmo == 0) ? regenTimer / (FULL_RECHARGE_FACTOR * regenRate) : 1f;
+        icon.setCooldownUI(fill);
         icon.setAmmo(curAmmo);
     }
 
     /* Use one ammo */
     protected void useAmmo() {
         curAmmo--;
+
+        if (curAmmo == 0f) {
+            regenTimer = 0f;
+        }
         //Debug.Log("Ammo Used! Ammo left: " + curAmmo);
     }
 

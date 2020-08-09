@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
-    private const float ASSIST_MOVE_LINGER_TIME = 0.5f;
+    private const float ASSIST_MOVE_LINGER_TIME = 1f;
     private const float MAX_ASSIST_SEQ_DURATION = 2.5f;
     private const float ENEMY_LINGER_REDUCTION = 0.3f;
     private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
@@ -163,9 +163,9 @@ public class PlayerController : MonoBehaviour
         
         /* Changing abilities via buttons */
         if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
-            selector.changeSelectAbility(0);
+            selector.changeSelectAbility(0, true);
         } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
-            selector.changeSelectAbility(1);
+            selector.changeSelectAbility(1, true);
         } 
 
         if (Input.GetKeyDown(ControlMap.CHANGE_SELECT) && !scrolled) {
@@ -240,7 +240,7 @@ public class PlayerController : MonoBehaviour
         /* Update main Index */
         mainIndex = newIndex;
         rotateFighterUI();
-        StartCoroutine(fighters[mainIndex].runSwapAnimation());
+        //StartCoroutine(fighters[mainIndex].runSwapAnimation());
     }
 
     /* Execute an assist move of a partner 
@@ -280,9 +280,9 @@ public class PlayerController : MonoBehaviour
         while(holdingAssistKey() && abilityUsed == -1 && enemyNotHitAssist(prevLiving) && assistSeqTimer < MAX_ASSIST_SEQ_DURATION) {
             /* Select Abilities doing quick select */
             if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
-                selector.changeSelectAbility(0);
+                selector.changeSelectAbility(0, true);
             } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
-                selector.changeSelectAbility(1);
+                selector.changeSelectAbility(1, true);
             }
 
             if (Input.GetKeyDown(ControlMap.CHANGE_SELECT) && !scrolled) {
@@ -422,7 +422,7 @@ public class PlayerController : MonoBehaviour
             lingerTime += 0.01f;
 
             //If enemy hits assist, extend linger by ENEMY_LINGER_REDUCTION seconds (2 sec is max)
-            if (curAssist.isAssistCancelled()) {
+            if (curAssist.isAssistCancelled() || curAssist.armorBroke()) {
                 float newLinger = lingerTime - ENEMY_LINGER_REDUCTION;
                 lingerTime = (newLinger >= 0f) ? newLinger : 0f;
                 curAssist.resetAssistStatus(); 

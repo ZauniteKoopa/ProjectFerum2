@@ -63,6 +63,10 @@ public class EntityStatus : MonoBehaviour
 
     /* Allows for an invincibility duration */
     private const float INVINCIBILITY_DURATION = 0.1f;
+
+    /* Audio source for sound effects */
+    [SerializeField]
+    private AudioSource soundEffects = null;
     
     /* UI Elements */
     [Header("User Interface:")]
@@ -323,7 +327,9 @@ public class EntityStatus : MonoBehaviour
         shieldStunned = true;
         movingDisabled = true;
         underPressure = false;
-        Debug.Log("Armor shattered!");
+        
+        /* Shatter sound effect: to be changed! */
+        soundEffects.PlayScheduled(0);
 
         /* Calculate armor shatter duration */
         float curShatterDuration = (transform.tag == GeneralConstants.PLAYER_TAG) ? 

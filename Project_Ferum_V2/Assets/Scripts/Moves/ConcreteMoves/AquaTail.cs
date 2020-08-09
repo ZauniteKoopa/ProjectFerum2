@@ -8,7 +8,7 @@ public class AquaTail : CircleAoE
     private const float COOLDOWN = 0.8f;
     private const bool MOVE_DISABLED = false;
 
-    private const int PWR = 25;
+    private const int PWR = 30;
     private const float KB = 400f;
     private const bool IS_PHY = true;
 

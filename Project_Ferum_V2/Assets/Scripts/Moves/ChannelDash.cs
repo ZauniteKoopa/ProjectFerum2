@@ -9,8 +9,8 @@ public class ChannelDash : CooldownMove
     private int maxPower;
     private int minPriority;
     private int maxPriority;
-    private const float MIN_DASH = 600f;
-    private const float MAX_DASH = 950f;
+    private const float MIN_DASH = 400f;
+    private const float MAX_DASH = 800f;
 
     private const float KB_DURATION = 0.08f;
     private const float DASH_DURATION = 0.4f;
