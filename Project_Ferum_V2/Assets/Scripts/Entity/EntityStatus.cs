@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class EntityStatus : MonoBehaviour
 {
-    /* Level */
-    [SerializeField]
-    private int lvl = 0;
-    [Space(20)]
 
     /* Stats */
     [SerializeField]
@@ -45,8 +41,8 @@ public class EntityStatus : MonoBehaviour
 
     /* Health regen variables */
     private float hTimer = 0f;
-    private const float HP_REGEN_PERCENT = 0.01f;
-    private const float HP_REGEN_RATE = 4f;
+    private const float HP_REGEN_PERCENT = 0.02f;
+    private const float HP_REGEN_RATE = 2.5f;
 
     /* Armor regen variables */
     private float aTimer = 0f;
@@ -88,11 +84,6 @@ public class EntityStatus : MonoBehaviour
     //  Accessor and mutator methods (Specifically for flags)
     //  ---------------------
 
-    /* Accessor method to level */
-    public int getLevel() {
-        return lvl;
-    }
-
     /* Accessor methods to stats */
     public float getStat(int statID) {
         float retStat = statusQueue.getStatFactor(statID);
@@ -126,7 +117,7 @@ public class EntityStatus : MonoBehaviour
 
     /* Method that checks if the player can move */
     public bool canMove() {
-        return !movingDisabled;
+        return !movingDisabled && curHealth > 0f;
     }
 
     /* Method that checks if entity is shield stunned */ 
@@ -140,9 +131,9 @@ public class EntityStatus : MonoBehaviour
     }
 
     //Consts for movement speed calculations
-    private const float MIN_BASE_MOVE = 0.055f;          //Minimum movement speed a pokemon can go
-    private const float MAX_BASE_MOVE = 0.205f;           //Maximum movement speed a pokemon can go
-    private const float BASE_SPEED_CAP = 150f;          //Capped speed
+    private const float MIN_BASE_MOVE = 0.045f;          //Minimum movement speed a pokemon can go
+    private const float MAX_BASE_MOVE = 0.185f;           //Maximum movement speed a pokemon can go
+    private const float BASE_SPEED_CAP = 100f;          //Capped speed
     private const float ATTACK_MOVE_REDUCTION = 0.35f;  //Movement speed reduction if entity is attacking
 
     /* Method to calculate movement speed of this entity */
@@ -388,7 +379,7 @@ public class EntityStatus : MonoBehaviour
         yield return curMove.executeMovePlayer();
 
         /* Set flag variables back to false */
-        movingDisabled = shieldStunned;
+        movingDisabled = shieldStunned || curHealth <= 0f;
         attacking = false; 
     }
 
@@ -447,7 +438,7 @@ public class EntityStatus : MonoBehaviour
         GetComponent<SpriteRenderer>().color = Color.magenta;
         movingDisabled = true;
 
-        yield return new WaitForSeconds(0.35f);
+        yield return new WaitForSeconds(0.2f);
 
         GetComponent<SpriteRenderer>().color = prevColor;
         movingDisabled = false;

@@ -7,8 +7,8 @@ public class FlameCharge : ChannelDash
     //Move properties
     private const float COOLDOWN = 10.5f;
 
-    private const int MAX_PWR = 75;
-    private const int MIN_PWR = 40;
+    private const int MAX_PWR = 80;
+    private const int MIN_PWR = 45;
     private const int MAX_PRIO = 8;
     private const int MIN_PRIO = 4;
 

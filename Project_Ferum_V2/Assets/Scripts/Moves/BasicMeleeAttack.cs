@@ -76,7 +76,7 @@ public class BasicMeleeAttack : FrameMove
 
     /* Does damage to target */
     public override void enactEffects(EntityStatus tgt) {
-        int damage = damageCalc(myStatus.getLevel(), power, myStatus, tgt, true);
+        int damage = damageCalc(power, myStatus, tgt, true);
         bool applyKB = tgt.applyDamage(damage);
 
         if (applyKB) {

@@ -16,6 +16,7 @@ public abstract class AbstractEnemy : MonoBehaviour
     private float attackTimeDelay = 0;
     private float attackTimer;
     private bool canAttack;
+    private const float AI_MOVE_REDUCTION = 0.65f;
 
     //Flag to indicate death
     private bool dead = false;
@@ -90,7 +91,7 @@ public abstract class AbstractEnemy : MonoBehaviour
 
     //Method to get this entity's movement speed
     protected float getMoveSpeed() {
-        return status.getMovementSpeed();
+        return status.getMovementSpeed() * AI_MOVE_REDUCTION;
     }
 
     // Method used to execute a move 

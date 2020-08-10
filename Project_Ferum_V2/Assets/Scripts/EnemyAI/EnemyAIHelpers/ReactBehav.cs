@@ -5,11 +5,12 @@ using UnityEngine;
 //Allows enemies to react to player and player attacks
 public class ReactBehav : MonoBehaviour
 {
-    //Timer variables
+    //React timer variables
     [SerializeField]
     private float reactionTiming = 0f;
     private float rTimer = 0f;
     private bool canReact = true;
+
 
     //Enemy that this reactor belongs to
     [SerializeField]
@@ -17,6 +18,16 @@ public class ReactBehav : MonoBehaviour
 
     // On trigger: have enemy react
     void OnTriggerEnter2D(Collider2D tgt) {
+        if (canReact) {
+            if (tgt.tag == GeneralConstants.PLAYER_TAG || tgt.tag == GeneralConstants.PLAYER_ATTK_TAG) {
+                boss.react(tgt);
+                canReact = false;
+            }
+        }
+    }
+
+    //On trigger stay: have enemy react
+    void OnTriggerStay2D(Collider2D tgt) {
         if (canReact) {
             if (tgt.tag == GeneralConstants.PLAYER_TAG || tgt.tag == GeneralConstants.PLAYER_ATTK_TAG) {
                 boss.react(tgt);

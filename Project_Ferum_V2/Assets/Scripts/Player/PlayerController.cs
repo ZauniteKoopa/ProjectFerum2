@@ -27,7 +27,6 @@ public class PlayerController : MonoBehaviour
     private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
     private int assistIndex = -1;                       //Index of assist fighter before doing assistMoves
     private EntityStatus curAssist = null;              //The current assist fighter
-    private int prevMainIndex = -1;                     //Previous main index during assistMoveSequence
     private bool assistDeath;                           //Flag to check if the assist fighter dies
     [SerializeField]
     private ChannelUI assistTimerUI = null;
@@ -240,7 +239,7 @@ public class PlayerController : MonoBehaviour
         /* Update main Index */
         mainIndex = newIndex;
         rotateFighterUI();
-        //StartCoroutine(fighters[mainIndex].runSwapAnimation());
+        StartCoroutine(fighters[mainIndex].runSwapAnimation());
     }
 
     /* Execute an assist move of a partner 
@@ -260,7 +259,7 @@ public class PlayerController : MonoBehaviour
         fighters[mainIndex].resetAssistStatus();
 
         /* Change main index and assist index, detach curAssist, and get rid of loop */
-        prevMainIndex = mainIndex;
+        int prevMainIndex = mainIndex;
         mainIndex = assistIndex;
 
         curAssist.gameObject.SetActive(true);
@@ -436,6 +435,10 @@ public class PlayerController : MonoBehaviour
         Debug.Assert(assistDeath);
         Debug.Assert(assistIndex >= 0 && assistIndex < 3);
 
+        //Set UI resources
+        int assignedUI = (assistIndex - mainIndex + initialNumFighters) % initialNumFighters;
+        UIStats[assignedUI].setDead();
+
         //Clear assistFighter out
         curAssist.transform.parent = transform;
         curAssist.transform.localPosition = Vector3.zero;
@@ -486,7 +489,7 @@ public class PlayerController : MonoBehaviour
     //        If assistFighter is available, wait until assistFighter finished with assistMove and then swap
     public IEnumerator OnDeath(EntityStatus corpse) {
 
-        if(corpse == fighters[mainIndex] && curAssist == null) {    //Case where the corpse is the main fighter NOT ASSIST FIGHTER
+        if(corpse == fighters[mainIndex] && numLiving > 1) {    //Case where the corpse is the main fighter NOT ASSIST FIGHTER
             numLiving--;
 
             dying = true;
@@ -514,16 +517,17 @@ public class PlayerController : MonoBehaviour
 
         }else if(corpse == curAssist) {                         //Case where the corpse is the assist fighter
             assistDeath = true;
-        }else if (prevMainIndex != -1) {                        //Case during assist move sequence where main fighter dies
+        }else if (corpse == fighters[mainIndex]) {                        //Case during assist move sequence where main fighter dies
             numLiving--;
 
             dying = true;
-            fighters[prevMainIndex].gameObject.SetActive(false);
-            fighters[prevMainIndex] = null;
+            fighters[mainIndex].gameObject.SetActive(false);
+            fighters[mainIndex] = null;
 
-            while (curAssist != null)
-                yield return 0;
-            
+            while (curAssist != null) {
+                yield return new WaitForFixedUpdate();
+            }
+
             if (numLiving > 0) {
                 yield return OnDeathSwap();
                 dying = false;

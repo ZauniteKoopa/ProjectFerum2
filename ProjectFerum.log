@@ -1,3 +1,15 @@
+commit 0241394a89d7b6cff810dd6050bf9464d6dc0c59
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Sun Aug 9 10:47:51 2020 -0500
+
+    Added sound effects, changed ammo recharge functionality when ammo == 0 and commented out swap animation
+
+commit df4b614d5796390bebbc4e4a4d18a69aca205283
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Sat Aug 8 16:37:04 2020 -0500
+
+    Allows cancelling out of bullet moves more easily without breaking firerate functionality and did balencing changes to regen rates of ammo moves
+
 commit 67b8496b6f5bf6f1f43731f0afd8d74de1b5f7fd
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Fri Aug 7 10:59:13 2020 -0500

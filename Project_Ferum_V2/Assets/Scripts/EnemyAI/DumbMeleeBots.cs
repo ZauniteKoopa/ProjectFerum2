@@ -9,16 +9,13 @@ public class DumbMeleeBots : AbstractEnemy
     private const int SHIELD_ID = 1;
     private const int CHARGE_DASH_ID = 2;
 
-    //Move reduction
-    private const float MOVE_REDUCTION = 0.5f;
-
     //Method for movement
     public override void movement() {
         if (isAgitated()) {
             Vector3 dirVect = getTgtPos() - transform.position;
             dirVect.Normalize();
 
-            transform.position += (dirVect * getMoveSpeed() * MOVE_REDUCTION);
+            transform.position += (dirVect * getMoveSpeed());
         }
     }
 

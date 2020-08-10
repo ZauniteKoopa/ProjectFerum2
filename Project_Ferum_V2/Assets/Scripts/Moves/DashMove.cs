@@ -101,7 +101,7 @@ public class DashMove : AmmoMove
 
         //Apply damage
         if (tgt != null) {
-            int damage = damageCalc(status.getLevel(), power, status, tgt, true);
+            int damage = damageCalc(power, status, tgt, true);
             bool enemyLived = tgt.applyDamage(damage);
 
             //Apply player recoil forces

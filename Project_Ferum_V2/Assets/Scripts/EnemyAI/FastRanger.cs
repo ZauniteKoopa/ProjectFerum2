@@ -15,8 +15,6 @@ public class FastRanger : AbstractEnemy
     private const float MIN_DISTANCE = 4.5f;    //The optimal min distance
     private const float MAX_DISTANCE = 5.5f;    //The optimal max distance for being with
 
-    private const float MOVE_REDUCTION = 0.75f;
-
     //Does circular movement around the player
     public override void movement() {
         if (isAgitated()) {
@@ -38,7 +36,7 @@ public class FastRanger : AbstractEnemy
             movement.Normalize();
 
             //Update animations
-            transform.Translate(movement * getMoveSpeed() * MOVE_REDUCTION);
+            transform.Translate(movement * getMoveSpeed());
         }
     }
 

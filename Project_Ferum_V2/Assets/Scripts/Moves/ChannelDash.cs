@@ -182,7 +182,7 @@ public class ChannelDash : CooldownMove
             float fPower = (float)minPower + ((float)(maxPower - minPower) * channelPercent);
             int power = Mathf.RoundToInt(fPower);
 
-            int damage = damageCalc(status.getLevel(), power, status, tgt, true);
+            int damage = damageCalc(power, status, tgt, true);
             bool enemyLived = tgt.applyDamage(damage);
 
             //Apply player recoil forces

@@ -65,7 +65,7 @@ public class SingleProjCD : CooldownMove
 
     //Enact effects on enemy
     public override void enactEffects(EntityStatus tgt) {
-        int damage = damageCalc(status.getLevel(), power, status, tgt, false);
+        int damage = damageCalc(power, status, tgt, false);
         bool applyKB = tgt.applyDamage(damage);
 
         if (applyKB) {

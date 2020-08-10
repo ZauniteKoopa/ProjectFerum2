@@ -6,7 +6,7 @@ using UnityEngine;
 /* Public interface that is used for ALL moves / abilities that a player or enemy uses */
 public abstract class IMove
 {
-    /* Boolean that represent play'ers movement during move animation */
+    /* Boolean that represent players movement during move animation */
     private bool movementDisabled;
 
     /* IMove constructor */
@@ -17,7 +17,7 @@ public abstract class IMove
     //Calculates damage for a given move based on the official pokemon damage formula
     //  Pre: 0 < lvl <= 100, 0 < power, attDefRatio = attacker attack / victim defense
     //  Post: Returns an int representing the amount of damage applied to enemy
-    public int damageCalc(int level, int power, EntityStatus attacker, EntityStatus tgt, bool isPhysical) {
+    public int damageCalc(int power, EntityStatus attacker, EntityStatus tgt, bool isPhysical) {
         /* Get necessariy stats from entity*/
         float entityAttack, enemyDef;
 
@@ -32,7 +32,7 @@ public abstract class IMove
         float attDefRatio = entityAttack / enemyDef;
 
         /* Calculate damage */
-        float damage = (0.5f * level + 2) * power * attDefRatio * 0.06f;
+        float damage = power * attDefRatio * 0.35f;
         damage += 1;
         return (int)damage;
     }

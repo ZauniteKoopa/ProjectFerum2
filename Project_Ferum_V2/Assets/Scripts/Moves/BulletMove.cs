@@ -92,7 +92,7 @@ public class BulletMove : AmmoMove
         int shotLimit = Random.Range(MIN_SHOTS, MAX_SHOTS + 1);
         int curShot = 0;
 
-        while(curShot < shotLimit && !myStatus.armorBroke()) {
+        while(curShot < shotLimit && !myStatus.armorBroke() && myStatus.getHealth() >= 0) {
             /* Get direction vector */
             Vector3 dirVect = tgt.position - myStatus.transform.position;
 
@@ -139,7 +139,7 @@ public class BulletMove : AmmoMove
 
     /* Does damage to enemy */
     public override void enactEffects(EntityStatus tgt) {
-        int damage = damageCalc(myStatus.getLevel(), power, myStatus, tgt, isPhy);
+        int damage = damageCalc(power, myStatus, tgt, isPhy);
         tgt.applyDamage(damage);
     }
 

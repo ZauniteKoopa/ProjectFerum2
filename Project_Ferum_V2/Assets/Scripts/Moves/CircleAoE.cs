@@ -55,7 +55,7 @@ public class CircleAoE : CooldownMove
 
     /* Does damage to enemy */
     public override void enactEffects(EntityStatus tgt) {
-        int damage = damageCalc(myStatus.getLevel(), pwr, myStatus, tgt, isPhy);
+        int damage = damageCalc(pwr, myStatus, tgt, isPhy);
         bool applyKB = tgt.applyDamage(damage);
 
         if (applyKB) {

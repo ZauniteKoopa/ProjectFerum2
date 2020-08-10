@@ -5,7 +5,7 @@ using UnityEngine;
 public class Pound : BasicMeleeAttack
 {
     //Move parameters
-    private const int PWR = 35;
+    private const int PWR = 45;
     private const float KB_FORCE = 300f;
     private const int PRIO = 4;
 
