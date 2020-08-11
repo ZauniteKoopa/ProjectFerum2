@@ -1,3 +1,9 @@
+commit 2fdd2eb349c79a102f8ce1d7f08536d6925c1fa7
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Mon Aug 10 14:46:27 2020 -0500
+
+    Added sound effects to most attacks (except charged dash), fixed death bug, and overhauled damage calculations / pwr values
+
 commit 0241394a89d7b6cff810dd6050bf9464d6dc0c59
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Sun Aug 9 10:47:51 2020 -0500

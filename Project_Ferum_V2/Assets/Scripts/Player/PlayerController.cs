@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -112,6 +113,11 @@ public class PlayerController : MonoBehaviour
         if (!assistMoveSeq && !dying) {
             transform.position += fighters[mainIndex].transform.localPosition;
             fighters[mainIndex].transform.localPosition = Vector3.zero;
+        }
+
+        /* Allows resetting prototype */
+        if (Input.GetKey(KeyCode.Escape)) {
+            SceneManager.LoadScene(0);
         }
     }
 

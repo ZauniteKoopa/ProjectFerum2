@@ -351,6 +351,9 @@ public class EntityStatus : MonoBehaviour
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
 
+        soundEffects.clip = Resources.Load<AudioClip>("Audio/Death");
+        soundEffects.Play();
+
         if (tag == GeneralConstants.ENEMY_TAG) {
             enemyUISource.SetActive(false);
             GetComponent<AbstractEnemy>().kill();
