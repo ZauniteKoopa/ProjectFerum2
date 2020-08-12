@@ -31,7 +31,25 @@ public class BasicMeleeAttack : FrameMove
         Vector3 distVector = getVectorToMouse(myStatus.transform);
         int vDir = getAttackOrientation(distVector, false);
         int hDir = getAttackOrientation(distVector, true);
-        yield return doMeleeMove(hDir, vDir);
+        
+        /* Set hitbox's assigned move to this*/
+        hitbox.GetComponent<Hitbox>().setMove(this);
+        hitbox.GetComponent<Hitbox>().setPriority(priority);
+        hitbox.GetComponent<StaticHitbox>().resetHitbox();
+
+        /* Reposition hitbox*/
+        Vector3 dirVector = new Vector3(hDir, vDir, 0);
+        dirVector.Normalize();
+        dirVector *= HITBOX_OFFSET;
+        hitbox.position += dirVector;
+
+        /* Activate hitbox*/
+        hitbox.gameObject.SetActive(true);
+        yield return playerWaitForSec(0.2f, myStatus, getMouseInputKey());
+        hitbox.gameObject.SetActive(false);
+
+        /* Reverse reposition*/
+        hitbox.position -= dirVector;
     }
 
     /* IEnumerator that allows an enemy / AI to attack */
@@ -47,7 +65,10 @@ public class BasicMeleeAttack : FrameMove
 
     /* IEnumerator that allows player to use this move as an assist move */
     public override IEnumerator executeAssistMove() {
-        yield return executeMovePlayer();
+        Vector3 distVector = getVectorToMouse(myStatus.transform);
+        int vDir = getAttackOrientation(distVector, false);
+        int hDir = getAttackOrientation(distVector, true);
+        yield return doMeleeMove(hDir, vDir);
     }
 
     /* Private helper method to do melee attack */

@@ -20,6 +20,10 @@ public class PlayerController : MonoBehaviour
     private int numLiving = 0;
     private const int SEC_MOVE_INDEX = 2;
 
+    /* Move Cancellation variables */
+    private bool primaryToSec = false;
+    private bool secToPrimary = false;
+
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
     private const float ASSIST_MOVE_LINGER_TIME = 1f;
@@ -94,6 +98,9 @@ public class PlayerController : MonoBehaviour
                 
         }
 
+        /* You can still select ability if cannot move */
+        selectAbility();
+
         /* Update ability UI regarding player */
         for(int i = 0; i < UIStats.Length; i++) {
             //Get a mapping from fighter to UI resources
@@ -165,34 +172,18 @@ public class PlayerController : MonoBehaviour
 
     /* Helper method for attacking: allows player to attack */
     void attack() {
-        
-        /* Changing abilities via buttons */
-        if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
-            selector.changeSelectAbility(0, true);
-        } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
-            selector.changeSelectAbility(1, true);
-        } 
-
-        if (Input.GetKeyDown(ControlMap.CHANGE_SELECT) && !scrolled) {
-            StartCoroutine(scrollDelay(true));
-        }
-
-        /* Changing abilities via mouse scroll */
-        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0 && !scrolled) {
-            StartCoroutine(scrollDelay(true));
-        } else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0 && !scrolled) {
-            StartCoroutine(scrollDelay(false));
-        }
 
         /* Execute ability */
         int selectedAbility = selector.getMoveIndex();
 
-        if (Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) {
+        if ((Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) || secToPrimary) {
+            secToPrimary = false;
             StartCoroutine(fighters[mainIndex].executeMovePlayer(selectedAbility));
         }
 
-        if (Input.GetMouseButtonDown(1) && fighters[mainIndex].canUseMove(SEC_MOVE_INDEX)) {
-            StartCoroutine(fighters[mainIndex].executeMovePlayer(2));
+        if ((Input.GetMouseButtonDown(1) && fighters[mainIndex].canUseMove(SEC_MOVE_INDEX)) || primaryToSec) {
+            primaryToSec = false;
+            StartCoroutine(fighters[mainIndex].executeMovePlayer(SEC_MOVE_INDEX));
         }
     }
 
@@ -212,6 +203,26 @@ public class PlayerController : MonoBehaviour
             }else if(Input.GetKeyDown(ControlMap.ASSIST_MOVE_RIGHT)) {
                 StartCoroutine(executeAssistMove(true));
             }
+        }
+    }
+
+    void selectAbility() {
+        /* Changing abilities via buttons */
+        if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
+            selector.changeSelectAbility(0, true);
+        } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
+            selector.changeSelectAbility(1, true);
+        } 
+
+        if (Input.GetKeyDown(ControlMap.CHANGE_SELECT) && !scrolled) {
+            StartCoroutine(scrollDelay(true));
+        }
+
+        /* Changing abilities via mouse scroll */
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0 && !scrolled) {
+            StartCoroutine(scrollDelay(true));
+        } else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0 && !scrolled) {
+            StartCoroutine(scrollDelay(false));
         }
     }
 
@@ -245,7 +256,23 @@ public class PlayerController : MonoBehaviour
         /* Update main Index */
         mainIndex = newIndex;
         rotateFighterUI();
-        StartCoroutine(fighters[mainIndex].runSwapAnimation());
+        StartCoroutine(fighters[mainIndex].runSwapAnimation(selector));
+    }
+
+    /* Move cancelling 
+        Pre: newMove must be either 0 (left click) or 1 (right click)
+        Post: Returns if the flag was actually set to true */
+    public bool cancelMove(int newInput) {
+        if (newInput == 0) {                                    //Case from switching from secondary to main
+            int selectedAbility = selector.getMoveIndex();
+            secToPrimary = fighters[mainIndex].canCancelMove(selectedAbility);
+            return secToPrimary;
+        } else if (newInput == 1) {                             //Case from switching from main to secondary
+            primaryToSec = fighters[mainIndex].canCancelMove(SEC_MOVE_INDEX);
+            return primaryToSec;
+        } else {
+            return false;
+        }
     }
 
     /* Execute an assist move of a partner 
@@ -560,7 +587,7 @@ public class PlayerController : MonoBehaviour
         mainIndex = newIndex;
         rotateFighterUI();
 
-        yield return fighters[mainIndex].runSwapAnimation();
+        yield return fighters[mainIndex].runSwapAnimation(selector);
     }
 
 }

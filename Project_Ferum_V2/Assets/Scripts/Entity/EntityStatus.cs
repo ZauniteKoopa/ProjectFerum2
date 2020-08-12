@@ -436,15 +436,37 @@ public class EntityStatus : MonoBehaviour
     }
 
     /* Public method to execute player animation for swapping: WILL BE IN SEPERATE CLASS */
-    public IEnumerator runSwapAnimation() {
+    private const float SWAP_ANIM_DURATION = 0.2f;
+
+    public IEnumerator runSwapAnimation(AbilitySelector selectedMove) {
+       //Change charging color
         Color prevColor = GetComponent<SpriteRenderer>().color;
         GetComponent<SpriteRenderer>().color = Color.magenta;
         movingDisabled = true;
+        float timer = 0;
+        bool attackedPrimary = false; bool attackedSec = false;
 
-        yield return new WaitForSeconds(0.2f);
+        //Loop
+        while (timer < SWAP_ANIM_DURATION && !attackedPrimary && !attackedSec) {
+            yield return new WaitForFixedUpdate();
+            timer += Time.deltaTime;
 
+            int selectedIndex = selectedMove.getMoveIndex();
+            attackedPrimary = Input.GetMouseButton(0) && canUseMove(selectedIndex);
+            attackedSec = Input.GetMouseButton(1) && canUseMove(2);
+        }
+
+        //Set color back to prev color
         GetComponent<SpriteRenderer>().color = prevColor;
         movingDisabled = false;
+
+        //Execute move if pressed
+        if (attackedPrimary) {
+            int selectedIndex = selectedMove.getMoveIndex();
+            StartCoroutine(executeMovePlayer(selectedIndex));
+        } else if (attackedSec) {
+            StartCoroutine(executeMovePlayer(2));
+        }
 
     }
 
@@ -549,5 +571,20 @@ public class EntityStatus : MonoBehaviour
             return false;
         
         return moves[moveID] != null;
+    }
+
+    /* Method to allow player to cancel moves: wrapper for method in player controller
+        Post: returns if move cancelling is successful */
+    public bool cancelMove(int newInput) {
+        return controller.GetComponent<PlayerController>().cancelMove(newInput);
+    }
+
+    /* Helper method to check if move is valid
+        A move is valid IFF the move slot is not null AND it can be run at this moment*/
+    public bool canCancelMove(int moveID) {
+        if(moveID < 0 || moveID >= 3)
+            return false;
+        
+        return moves[moveID] != null && moves[moveID].canRun();
     }
 }

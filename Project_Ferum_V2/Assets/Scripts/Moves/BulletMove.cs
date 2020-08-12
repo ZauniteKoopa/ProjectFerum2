@@ -49,13 +49,14 @@ public class BulletMove : AmmoMove
     /* Allows player to shoot */
     public override IEnumerator executeMovePlayer() {
         int mouseInput = getMouseInputKey();
+        bool cancelled = false;
 
         //If weapon is recharging, wait for weapon to recharge
         while (Input.GetMouseButton(mouseInput) && recharging) {
             yield return new WaitForFixedUpdate();
         }
 
-        while(Input.GetMouseButton(mouseInput) && canRun() && !myStatus.armorBroke()) {
+        while(Input.GetMouseButton(mouseInput) && canRun() && !myStatus.armorBroke() && !cancelled) {
             /* Get direction vector */
             Vector3 dirVect = getVectorToMouse(myStatus.transform);
 
@@ -70,9 +71,10 @@ public class BulletMove : AmmoMove
 
             /* Wait for next chance to fire */
             float fireRateTimer = 0f;
-            while (Input.GetMouseButton(mouseInput) && fireRateTimer < fireRate) {
+            while (Input.GetMouseButton(mouseInput) && fireRateTimer < fireRate && !cancelled) {
                 yield return new WaitForFixedUpdate();
                 fireRateTimer += Time.deltaTime;
+                cancelled = cancelInputPressed(mouseInput, fireRateTimer, fireRate);
             }
 
             /* If cancelled early: set RechargeTimer to fireRate timer */
@@ -81,6 +83,10 @@ public class BulletMove : AmmoMove
                 recharging = true;
             }
         }
+
+        //If cancelled
+        if (cancelled)
+            myStatus.cancelMove((mouseInput + 1) % 2);
     }
 
     /* IEnumerator that allows an enemy / AI to attack */

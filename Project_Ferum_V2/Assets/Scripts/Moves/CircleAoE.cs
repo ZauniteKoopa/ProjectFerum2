@@ -28,7 +28,17 @@ public class CircleAoE : CooldownMove
 
     /* Move that allows player to execute move */
     public override IEnumerator executeMovePlayer() {
-        yield return executeMoveEnemy(null);
+        /* Set hitbox properties */
+        Transform curHitbox = Object.Instantiate(hitbox, myStatus.transform);
+        curHitbox.tag = assignHitboxTag(myStatus.tag);
+        curHitbox.GetComponent<Hitbox>().setMove(this);
+        curHitbox.GetComponent<StaticHitbox>().resetHitbox();
+
+        /* Duration of move */
+        yield return playerWaitForSec(MOVE_DURATION, myStatus, getMouseInputKey());
+
+        /* Destroy hitbox and Activate cooldown */
+        Object.Destroy(curHitbox.gameObject);
         startCDTimer();
     }
 

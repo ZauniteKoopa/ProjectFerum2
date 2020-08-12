@@ -10,7 +10,7 @@ public class Protect : CooldownMove
 
     //Innate constant variables
     private const float PROTECT_DURATION = 2.5f;
-    private const float PROTECT_COOLDOWN = 16f;
+    private const float PROTECT_COOLDOWN = 12.5f;
     private const int PROTECT_PRIORITY = 11;
 
     //Protect Constructor
@@ -29,16 +29,18 @@ public class Protect : CooldownMove
         //Set up loop and begin duration
         int mouseInput = getMouseInputKey();
         float timer = 0f;
+        bool cancelled = false;
         status.setInvincibility(true);
         hitbox.GetComponent<DashBoxBehav>().activateHitbox(assignHitboxTag(status.tag), this, PROTECT_PRIORITY);
 
         //Channel UI
         status.setChannelActive(true);
 
-        while (timer < PROTECT_DURATION && Input.GetMouseButton(mouseInput)) {
+        while (timer < PROTECT_DURATION && Input.GetMouseButton(mouseInput) && !cancelled) {
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
             status.setChannelProgress(PROTECT_DURATION - timer, PROTECT_DURATION);
+            cancelled = Input.GetMouseButtonDown((mouseInput + 1) % 2);
         }
 
         //Channel UI disable
@@ -49,6 +51,9 @@ public class Protect : CooldownMove
         status.setInvincibility(false);
         render.color = prevColor;
         startCDTimer();
+
+        if (cancelled)
+            status.cancelMove((mouseInput + 1) % 2);
     }
 
     //Allows enemy to move

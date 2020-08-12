@@ -9,6 +9,9 @@ public abstract class IMove
     /* Boolean that represent players movement during move animation */
     private bool movementDisabled;
 
+    /* Constants for move cancelling */
+    private const float UNCANCELED_PERCENT = 0.65f;
+
     /* IMove constructor */
     public IMove(bool moveType) {
         movementDisabled = moveType;
@@ -62,6 +65,39 @@ public abstract class IMove
         Vector3 retVector = new Vector3(mousePos.x - src.position.x, mousePos.y - src.position.y, 0);
         retVector.Normalize();
         return retVector;
+    }
+
+    //Allows move cancelling within player given a move that acts within a fixed time: replaces WaitForSeconds() for execute player
+    //  Pre: duration > 0f, curInput must be 0 or 1, es != null
+    //  Post: executePlayer's version of WaitForSeconds with move cancellation
+    protected IEnumerator playerWaitForSec(float duration, EntityStatus es, int curInput) {
+        //Get important variables
+        int cancelInput = (curInput + 1) % 2;
+        float uncancelDur = duration * UNCANCELED_PERCENT;
+        float cancelDur = duration - uncancelDur;
+
+        //Wait for uncanceled duration
+        yield return new WaitForSeconds(uncancelDur);
+
+        //Start loop for cancelled duration
+        float timer = 0f;
+
+        while (timer <= cancelDur && !Input.GetMouseButtonDown(cancelInput)) {
+            yield return new WaitForFixedUpdate();
+            timer += Time.deltaTime;
+        }
+
+        //After loop, check if the cancelInput was done
+        if (Input.GetMouseButtonDown(cancelInput)) {
+            es.cancelMove(cancelInput);
+        }
+    }
+
+    //Accessor method to cancelInput
+    protected bool cancelInputPressed(int curInput, float timer, float maxTime) {
+        bool cancellable = timer >= maxTime * UNCANCELED_PERCENT;
+        int cancelInput = (curInput + 1) % 2;
+        return cancellable && Input.GetMouseButton(cancelInput);
     }
 
     //Checks IMove's movement status during player's animation

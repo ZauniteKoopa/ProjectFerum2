@@ -28,31 +28,18 @@ public class SingleProjCD : CooldownMove
 
     //Allows player to execute move
     public override IEnumerator executeMovePlayer() {
-        /* Get direction vector */
-        Vector3 dirVect = getVectorToMouse(status.transform);
-
-        /* Set properties of projectile and detach from parent*/
-        curHitbox = Object.Instantiate(hitbox, status.transform);
-        curHitbox.tag = assignHitboxTag(status.tag);
-        curHitbox.GetComponent<ProjectileBehav>().setProperties(this, dirVect);
-        curHitbox.parent = null;
-        
+        createProjectile(getVectorToMouse(status.transform));
         startCDTimer();
 
         /* Do animation */
-        yield return new WaitForSeconds(ATTACK_ANIM_TIME);
+        yield return playerWaitForSec(ATTACK_ANIM_TIME, status, getMouseInputKey());
     }
 
     //Allows enemy to execute move
     public override IEnumerator executeMoveEnemy(Transform tgt) {
         /* Get direction vector */
         Vector3 dirVect = tgt.position - status.transform.position;
-
-        /* Set properties of projectile and detach from parent*/
-        curHitbox = Object.Instantiate(hitbox, status.transform);
-        curHitbox.tag = assignHitboxTag(status.tag);
-        curHitbox.GetComponent<ProjectileBehav>().setProperties(this, dirVect);
-        curHitbox.parent = null;
+        createProjectile(dirVect);
 
         /* Do animation */
         yield return new WaitForSeconds(ATTACK_ANIM_TIME);
@@ -60,7 +47,20 @@ public class SingleProjCD : CooldownMove
 
     //Allows player's assist to execute move
     public override IEnumerator executeAssistMove() {
-        yield return executeMovePlayer();
+        createProjectile(getVectorToMouse(status.transform));
+        startCDTimer();
+
+        /* Do animation */
+        yield return new WaitForSeconds(ATTACK_ANIM_TIME);
+    }
+
+    //Creates projectile
+    private void createProjectile(Vector3 dirVect) {
+        /* Set properties of projectile and detach from parent*/
+        curHitbox = Object.Instantiate(hitbox, status.transform);
+        curHitbox.tag = assignHitboxTag(status.tag);
+        curHitbox.GetComponent<ProjectileBehav>().setProperties(this, dirVect);
+        curHitbox.parent = null;
     }
 
     //Enact effects on enemy
