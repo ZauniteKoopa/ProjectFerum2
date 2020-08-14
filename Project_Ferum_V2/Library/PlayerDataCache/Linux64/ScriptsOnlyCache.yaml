@@ -754,4 +754,4 @@ ScriptsOnlyBuild:
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
   playerPath: /home/zaunite-koopa/Documents/Unity_Prototypes/ProjectFerum2/Builds/Linux/Ferum
-    V.2.0/FerumPrototype V.2.0.x86_64
+    V.2.1/FerumPrototype V.2.1.x86_64

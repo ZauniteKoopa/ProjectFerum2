@@ -1,3 +1,15 @@
+commit 7369e55949a9d5614cf54139274c2352fcd9f72a
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Wed Aug 12 14:25:21 2020 -0500
+
+    Implemented move cancelling and swap animation cancel by attacking with minor balance changes
+
+commit 6ad6526bed69f771de7c1e7604f13be442b898ef
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Tue Aug 11 13:29:20 2020 -0500
+
+    Made scalable UI for different resolutions, added death noises, and created initial builds
+
 commit 2fdd2eb349c79a102f8ce1d7f08536d6925c1fa7
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Mon Aug 10 14:46:27 2020 -0500

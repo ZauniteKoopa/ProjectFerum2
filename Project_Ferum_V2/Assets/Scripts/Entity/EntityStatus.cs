@@ -41,8 +41,8 @@ public class EntityStatus : MonoBehaviour
 
     /* Health regen variables */
     private float hTimer = 0f;
-    private const float HP_REGEN_PERCENT = 0.02f;
-    private const float HP_REGEN_RATE = 2.5f;
+    private const float HP_REGEN_PERCENT = 0.015f;
+    private const float HP_REGEN_RATE = 3f;
 
     /* Armor regen variables */
     private float aTimer = 0f;
@@ -311,7 +311,7 @@ public class EntityStatus : MonoBehaviour
     }
 
     /* Method for armor shattering */
-    private const float ARMOR_SHATTER_DURATION_ENEMY = 3f;
+    private const float ARMOR_SHATTER_DURATION_ENEMY = 2.25f;
     private const float ARMOR_SHATTER_DURATION_PLAYER = 1.75f;
 
     IEnumerator shieldStun() {
@@ -322,6 +322,11 @@ public class EntityStatus : MonoBehaviour
         /* Shatter sound effect: to be changed! */
         soundEffects.PlayScheduled(0);
 
+        //Change color
+        SpriteRenderer render = GetComponent<SpriteRenderer>();
+        Color prevColor = render.color;
+        render.color = (tag == GeneralConstants.PLAYER_TAG) ? Color.white : Color.yellow;
+
         /* Calculate armor shatter duration */
         float curShatterDuration = (transform.tag == GeneralConstants.PLAYER_TAG) ? 
                                     ARMOR_SHATTER_DURATION_PLAYER
@@ -329,9 +334,9 @@ public class EntityStatus : MonoBehaviour
 
         yield return new WaitForSeconds(curShatterDuration);
 
-        Debug.Log("Armor Restored");
         curArmor = maxArmor;
         armorBar.fillAmount = 1f;
+        render.color = prevColor;
 
         shieldStunned = false;
         movingDisabled = false;

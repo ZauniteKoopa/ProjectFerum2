@@ -7,7 +7,7 @@ public class FlameBurst : SingleProjCD
     //Move parameters
     private const int PWR = 40;
     private const float KB = 250f;
-    private const float COOLDOWN = 2.5f;
+    private const float COOLDOWN = 1.75f;
 
     //Constructor
     public FlameBurst(EntityStatus es) : base(es, PWR, KB, COOLDOWN, "MoveHitboxes/BurstProj") {}

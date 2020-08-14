@@ -754,4 +754,4 @@ ScriptsOnlyBuild:
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
   playerPath: /home/zaunite-koopa/Documents/Unity_Prototypes/ProjectFerum2/Builds/Windows/Ferum
-    V.2.0/Project_Ferum_V2.exe
+    V.2.1/Project_Ferum_V2.exe

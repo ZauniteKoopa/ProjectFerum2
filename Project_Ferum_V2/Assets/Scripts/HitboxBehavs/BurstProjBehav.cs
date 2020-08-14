@@ -62,6 +62,7 @@ public class BurstProjBehav : ProjectileBehav
         moving = false;
         blastTimer = 0f;
         GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
 
         //Enable splash box's hitbox
         splashBox.gameObject.SetActive(true);

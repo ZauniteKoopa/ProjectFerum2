@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
     private const float ASSIST_MOVE_LINGER_TIME = 1f;
-    private const float MAX_ASSIST_SEQ_DURATION = 2.5f;
+    private const float MAX_ASSIST_SEQ_DURATION = 1.5f;
     private const float ENEMY_LINGER_REDUCTION = 0.3f;
     private bool assistMoveSeq = false;                 //Flag for moving during assistMoveSequence
     private int assistIndex = -1;                       //Index of assist fighter before doing assistMoves
@@ -99,33 +99,14 @@ public class PlayerController : MonoBehaviour
         }
 
         /* You can still select ability if cannot move */
-        selectAbility();
-
-        /* Update ability UI regarding player */
-        for(int i = 0; i < UIStats.Length; i++) {
-            //Get a mapping from fighter to UI resources
-            int assignedUI = (i - mainIndex + initialNumFighters) % initialNumFighters;
-
-            if (fighters[i] != null)
-                fighters[i].playerRegen(UIStats[assignedUI].abilities);
-        }
-
-        /* Update ability UI for assistFighter */
-        if (curAssist != null) {
-            int assignedUI = (assistIndex - mainIndex + 3) % 3;
-            curAssist.playerRegen(UIStats[assignedUI].abilities);
-        }
-
-        /* Camera always focused on for mainFighter */
-        if (!assistMoveSeq && !dying) {
-            transform.position += fighters[mainIndex].transform.localPosition;
-            fighters[mainIndex].transform.localPosition = Vector3.zero;
-        }
-
+        if (!assistMoveSeq)
+            selectAbility();
+        
         /* Allows resetting prototype */
-        if (Input.GetKey(KeyCode.Escape)) {
+        if (Input.GetKey(KeyCode.Escape))
             SceneManager.LoadScene(0);
-        }
+
+        updateResources();
     }
 
     /* Movement helper method for FixedUpdate(): Allows player to move
@@ -226,6 +207,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void updateResources() {
+        /* Update ability UI regarding player */
+        for(int i = 0; i < UIStats.Length; i++) {
+            //Get a mapping from fighter to UI resources
+            int assignedUI = (i - mainIndex + initialNumFighters) % initialNumFighters;
+
+            if (fighters[i] != null)
+                fighters[i].playerRegen(UIStats[assignedUI].abilities);
+        }
+
+        /* Update ability UI for assistFighter */
+        if (curAssist != null) {
+            int assignedUI = (assistIndex - mainIndex + 3) % 3;
+            curAssist.playerRegen(UIStats[assignedUI].abilities);
+        }
+
+        /* Camera always focused on for mainFighter */
+        if (!assistMoveSeq && !dying) {
+            transform.position += fighters[mainIndex].transform.localPosition;
+            fighters[mainIndex].transform.localPosition = Vector3.zero;
+        }
+    }
+
 
     //Private helper method with scrolling through secondary moves without doubling on scrolling
     //  Pre: an item was scrolled through
@@ -282,14 +286,12 @@ public class PlayerController : MonoBehaviour
         Debug.Assert(numLiving > 1);
 
         /* Set up boolean flags for this controller */
-        assistMoveSeq = true;
-        assistDeath = false;
+        assistMoveSeq = true;  assistDeath = false;
         
         /* Get fighter to do assist move */
         assistIndex = getNextFighter(swapRight);
         curAssist = fighters[assistIndex];
-        curAssist.resetAssistStatus();
-        fighters[mainIndex].resetAssistStatus();
+        curAssist.resetAssistStatus();  fighters[mainIndex].resetAssistStatus();
 
         /* Change main index and assist index, detach curAssist, and get rid of loop */
         int prevMainIndex = mainIndex;
@@ -299,38 +301,23 @@ public class PlayerController : MonoBehaviour
         curAssist.transform.parent = null;
         numLiving--;
         rotateFighterUI();
+
         assistTimerUI.setActive(true);
         assistTimerUI.setChannel(1, 1);
 
+        /* Set up loop */
         int abilityUsed = -1;       //If this number is still -1, no ability used
         int prevLiving = numLiving;
         float assistSeqTimer = 0f;
         Time.timeScale = ASSIST_MOVE_SLOW;
 
-
         /* Wait until player releases c/v button or takes damage or uses an ability or runs out of time */
-        while(holdingAssistKey() && abilityUsed == -1 && enemyNotHitAssist(prevLiving) && assistSeqTimer < MAX_ASSIST_SEQ_DURATION) {
+        while(holdingAssistKey() && abilityUsed == -1 && enemyNotHitAssist(prevLiving, prevMainIndex) && assistSeqTimer < MAX_ASSIST_SEQ_DURATION) {
             /* Select Abilities doing quick select */
-            if (Input.GetKey(ControlMap.SELECT_ABILITY_1) && fighters[mainIndex].canSelectMove(0)) {
-                selector.changeSelectAbility(0, true);
-            } else if (Input.GetKey(ControlMap.SELECT_ABILITY_2) && fighters[mainIndex].canSelectMove(1)) {
-                selector.changeSelectAbility(1, true);
-            }
-
-            if (Input.GetKeyDown(ControlMap.CHANGE_SELECT) && !scrolled) {
-                StartCoroutine(scrollDelay(true));
-            }
-
-            /* Changing abilities via mouse scroll */
-            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0 && !scrolled) {
-                StartCoroutine(scrollDelay(true));
-            } else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0 && !scrolled) {
-                StartCoroutine(scrollDelay(false));
-            }
+            selectAbility();
 
             /* Execute primary ability */
             int selectedAbility = selector.getMoveIndex();
-
             if (Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) {
                 abilityUsed = selectedAbility;
             }
@@ -348,20 +335,18 @@ public class PlayerController : MonoBehaviour
         }
 
         //If an ability is used or curAssist was damaged, have the assist linger
-        bool linger = abilityUsed != -1 || !enemyNotHitAssist(prevLiving) || assistSeqTimer >= MAX_ASSIST_SEQ_DURATION;
+        bool linger = abilityUsed != -1 || !enemyNotHitAssist(prevLiving, prevMainIndex) || assistSeqTimer >= MAX_ASSIST_SEQ_DURATION;
 
         /* Shift control back to main fighter and revert timescale to normal. Disable assist */
         mainIndex = prevMainIndex;
-        prevMainIndex = -1;
-        Time.timeScale = 1.0f;
-        assistMoveSeq = false;
+        Time.timeScale = 1.0f; assistMoveSeq = false;
         rotateFighterUI();
-        assistTimerUI.setActive(false);
 
         /* In the case where you do linger */
         if (linger && !assistDeath) {
             /* Disable fighter in fighters array */
             fighters[assistIndex] = null;
+            assistTimerUI.setChannel(1, 1);
 
             /* execute assist move if ability done */
             if (abilityUsed != -1)
@@ -372,6 +357,7 @@ public class PlayerController : MonoBehaviour
         }
 
         /* Check for assistDeath to decide what to do with assistFighter after sequence */
+        assistTimerUI.setActive(false);
         if (assistDeath)
             destroyAssistFighter(assistIndex);
         else
@@ -459,6 +445,8 @@ public class PlayerController : MonoBehaviour
                 lingerTime = (newLinger >= 0f) ? newLinger : 0f;
                 curAssist.resetAssistStatus(); 
             }
+
+            assistTimerUI.setChannel(ASSIST_MOVE_LINGER_TIME - lingerTime, ASSIST_MOVE_LINGER_TIME);
         }
     }
 
@@ -505,12 +493,12 @@ public class PlayerController : MonoBehaviour
     }
 
     //Method to check if an enemy has interrupted an assist move 
-    private bool enemyNotHitAssist(int prevLiving) {
+    private bool enemyNotHitAssist(int prevLiving, int prevMain) {
         //Checks for the death case 
         if(numLiving < prevLiving)
             return false;
 
-        return !curAssist.isAssistCancelled() && !fighters[mainIndex].isAssistCancelled();
+        return !curAssist.isAssistCancelled() && !fighters[prevMain].isAssistCancelled();
     }
 
 
@@ -522,7 +510,7 @@ public class PlayerController : MonoBehaviour
     //        If assistFighter is available, wait until assistFighter finished with assistMove and then swap
     public IEnumerator OnDeath(EntityStatus corpse) {
 
-        if(corpse == fighters[mainIndex] && numLiving > 1) {    //Case where the corpse is the main fighter NOT ASSIST FIGHTER
+        if(corpse == fighters[mainIndex] && numLiving > 1) {        //Case where the corpse is the main fighter NOT ASSIST FIGHTER
             numLiving--;
 
             dying = true;
@@ -548,9 +536,9 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-        }else if(corpse == curAssist) {                         //Case where the corpse is the assist fighter
+        }else if(corpse == curAssist) {                             //Case where the corpse is the assist fighter
             assistDeath = true;
-        }else if (corpse == fighters[mainIndex]) {                        //Case during assist move sequence where main fighter dies
+        }else if (corpse == fighters[mainIndex]) {                  //Case during assist move sequence where main fighter dies
             numLiving--;
 
             dying = true;
