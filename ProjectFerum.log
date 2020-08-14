@@ -1,3 +1,9 @@
+commit 12e71076511031491a4872132782739b4ac7e011
+Author: Anthony Hoang <anthonyhoang3074@gmail.com>
+Date:   Fri Aug 14 14:03:18 2020 -0500
+
+    Fixed splash damage bug, allowed assist channel progress during linger, and indicated armor shatter via renderers
+
 commit 7369e55949a9d5614cf54139274c2352fcd9f72a
 Author: Anthony Hoang <anthonyhoang3074@gmail.com>
 Date:   Wed Aug 12 14:25:21 2020 -0500

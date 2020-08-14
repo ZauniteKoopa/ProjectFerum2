@@ -2672,7 +2672,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 380, y: 25}
+  m_SizeDelta: {x: 360, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &346961339
 MonoBehaviour:
@@ -3412,9 +3412,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attk: 20
-  def: 40
+  def: 100
   sAttk: 10
-  sDef: 35
+  sDef: 100
   speed: 30
   maxHealth: 50
   moveNames:
@@ -6262,7 +6262,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 380, y: 25}
+  m_SizeDelta: {x: 360, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &980611450
 MonoBehaviour:
@@ -17281,8 +17281,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 150}
-  m_SizeDelta: {x: 400, y: 40}
+  m_AnchoredPosition: {x: -13, y: 157}
+  m_SizeDelta: {x: 380, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1373345476
 MonoBehaviour:
@@ -20722,6 +20722,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FastRanger
+      objectReference: {fileID: 0}
+    - target: {fileID: 3138875862785612319, guid: ca5855de8c2747e60a8ae59632e867fb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ca5855de8c2747e60a8ae59632e867fb, type: 3}
