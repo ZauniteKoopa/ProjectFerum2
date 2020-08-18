@@ -40,7 +40,7 @@ public class Protect : CooldownMove
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
             status.setChannelProgress(PROTECT_DURATION - timer, PROTECT_DURATION);
-            cancelled = Input.GetMouseButtonDown((mouseInput + 1) % 2);
+            cancelled = status.cancelMove();
         }
 
         //Channel UI disable
@@ -51,9 +51,6 @@ public class Protect : CooldownMove
         status.setInvincibility(false);
         render.color = prevColor;
         startCDTimer();
-
-        if (cancelled)
-            status.cancelMove((mouseInput + 1) % 2);
     }
 
     //Allows enemy to move

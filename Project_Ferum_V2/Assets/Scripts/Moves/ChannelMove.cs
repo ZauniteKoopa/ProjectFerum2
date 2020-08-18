@@ -66,7 +66,7 @@ public abstract class ChannelMove : CooldownMove
 
             curChannel += Time.deltaTime;
             status.setChannelProgress(curChannel, maxChannel);
-            cancelled = Input.GetMouseButton((mouseInput + 1) % 2);
+            cancelled = status.cancelMove();
         }
 
         //Dismantle channeling stage
@@ -82,9 +82,6 @@ public abstract class ChannelMove : CooldownMove
         } else {
             curChannel -= (curChannel * INITIAL_DECAY);
         }
-
-        if (cancelled)
-            status.cancelMove((mouseInput + 1) % 2);
     }
 
     // Method to execute as an enemy

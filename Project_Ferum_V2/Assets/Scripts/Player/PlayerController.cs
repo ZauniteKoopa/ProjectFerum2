@@ -20,9 +20,8 @@ public class PlayerController : MonoBehaviour
     private int numLiving = 0;
     private const int SEC_MOVE_INDEX = 2;
 
-    /* Move Cancellation variables */
-    private bool primaryToSec = false;
-    private bool secToPrimary = false;
+    /* Move cancelling variables */
+    int attackingMove = -1;
 
     /* Assist move constants */
     private const float ASSIST_MOVE_SLOW = 0.15f;
@@ -87,13 +86,13 @@ public class PlayerController : MonoBehaviour
             movement();
 
             if (!assistMoveSeq) {
-                
-                attack();
 
                 /* teamwork moves */
                 if(numLiving > 1) {
                     teamwork();
                 }
+                
+                attack();
             }
                 
         }
@@ -157,13 +156,13 @@ public class PlayerController : MonoBehaviour
         /* Execute ability */
         int selectedAbility = selector.getMoveIndex();
 
-        if ((Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) || secToPrimary) {
-            secToPrimary = false;
+        if (Input.GetMouseButtonDown(0) && fighters[mainIndex].canUseMove(selectedAbility)) {
+            attackingMove = selectedAbility;
             StartCoroutine(fighters[mainIndex].executeMovePlayer(selectedAbility));
         }
 
-        if ((Input.GetMouseButtonDown(1) && fighters[mainIndex].canUseMove(SEC_MOVE_INDEX)) || primaryToSec) {
-            primaryToSec = false;
+        if (Input.GetMouseButtonDown(1) && fighters[mainIndex].canUseMove(SEC_MOVE_INDEX)) {
+            attackingMove = SEC_MOVE_INDEX;
             StartCoroutine(fighters[mainIndex].executeMovePlayer(SEC_MOVE_INDEX));
         }
     }
@@ -264,19 +263,34 @@ public class PlayerController : MonoBehaviour
     }
 
     /* Move cancelling 
-        Pre: newMove must be either 0 (left click) or 1 (right click)
-        Post: Returns if the flag was actually set to true */
-    public bool cancelMove(int newInput) {
-        if (newInput == 0) {                                    //Case from switching from secondary to main
-            int selectedAbility = selector.getMoveIndex();
-            secToPrimary = fighters[mainIndex].canCancelMove(selectedAbility);
-            return secToPrimary;
-        } else if (newInput == 1) {                             //Case from switching from main to secondary
-            primaryToSec = fighters[mainIndex].canCancelMove(SEC_MOVE_INDEX);
-            return primaryToSec;
-        } else {
-            return false;
+        Post: Returns if a move has been cancelled
+                A move can be cancelled by using another move OR swapping to another teammate*/
+    public bool cancelledMove() {
+        int transitionMove = attackingMove;
+
+        //Move cancelling: If player uses a different move, cancel current move
+        int selectedAbility = selector.getMoveIndex();
+        if (Input.GetMouseButton(0) && fighters[mainIndex].canCancelMove(selectedAbility))
+            transitionMove = selectedAbility;
+        else if (Input.GetMouseButtonDown(1) && fighters[mainIndex].canCancelMove(SEC_MOVE_INDEX))
+            transitionMove = SEC_MOVE_INDEX;
+        
+        if (transitionMove != attackingMove) {
+            StartCoroutine(fighters[mainIndex].executeMovePlayer(transitionMove));
+            return true;
         }
+
+        //Checks if player wants to swap
+        bool cancelSwapLeft = false;
+        bool cancelSwapRight = false;
+
+        if(Input.GetKeyDown(ControlMap.SWAP_LEFT)) {
+            cancelSwapLeft = true;
+        }else if(Input.GetKeyDown(ControlMap.SWAP_RIGHT)) {
+            cancelSwapRight = true;
+        }
+
+        return cancelSwapRight || cancelSwapLeft;
     }
 
     /* Execute an assist move of a partner 
@@ -300,6 +314,7 @@ public class PlayerController : MonoBehaviour
         curAssist.gameObject.SetActive(true);
         curAssist.transform.parent = null;
         numLiving--;
+        int prevSelector = selector.getMoveIndex();
         rotateFighterUI();
 
         assistTimerUI.setActive(true);
@@ -341,6 +356,7 @@ public class PlayerController : MonoBehaviour
         mainIndex = prevMainIndex;
         Time.timeScale = 1.0f; assistMoveSeq = false;
         rotateFighterUI();
+        selector.changeSelectAbility(prevSelector, false);
 
         /* In the case where you do linger */
         if (linger && !assistDeath) {

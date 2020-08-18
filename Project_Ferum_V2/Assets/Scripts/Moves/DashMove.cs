@@ -35,7 +35,6 @@ public class DashMove : AmmoMove
     public override IEnumerator executeMovePlayer() {
         //Get directional vector
         Vector3 dirVector = getVectorToMouse(status.transform);
-        int input = 1;
 
         //Set Dashbox characteristics
         hitbox.GetComponent<DashBoxBehav>().activateHitbox(assignHitboxTag(status.tag), this, priority);
@@ -52,11 +51,8 @@ public class DashMove : AmmoMove
         while(!hitTgt && timer < dashDuration && !status.armorBroke() && !cancelled) {
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
-            cancelled = cancelInputPressed(input, timer, dashDuration);
+            cancelled = status.cancelMove();
         }
-
-        if (cancelled)
-            status.cancelMove((input + 1) % 2);
 
         //If target not hit, stop the dash by setting velocity to 0
         if(!hitTgt) {

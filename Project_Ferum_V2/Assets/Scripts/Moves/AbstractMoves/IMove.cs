@@ -81,15 +81,12 @@ public abstract class IMove
 
         //Start loop for cancelled duration
         float timer = 0f;
+        bool cancelled = false;
 
-        while (timer <= cancelDur && !Input.GetMouseButtonDown(cancelInput)) {
+        while (timer <= cancelDur && !cancelled) {
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
-        }
-
-        //After loop, check if the cancelInput was done
-        if (Input.GetMouseButtonDown(cancelInput)) {
-            es.cancelMove(cancelInput);
+            cancelled = es.cancelMove();
         }
     }
 

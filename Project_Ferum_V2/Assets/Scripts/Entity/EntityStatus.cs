@@ -34,6 +34,7 @@ public class EntityStatus : MonoBehaviour
     private string[] moveNames = null;
     private IMove[] moves = new IMove[3];
     private int numPrimaryMoves = 0;
+    private int lastUsedMove = -1;
     [Space(20)]
 
     /* Stat effects - to be added */
@@ -377,6 +378,9 @@ public class EntityStatus : MonoBehaviour
         if(moveID < 0 || moveID >= 3)
             throw new System.Exception("Error: Invalid move ID");
 
+        /* Set move management */
+        lastUsedMove = moveID;
+
         /* Set attacking to true */
         attacking = true;
 
@@ -386,9 +390,11 @@ public class EntityStatus : MonoBehaviour
 
         yield return curMove.executeMovePlayer();
 
-        /* Set flag variables back to false */
-        movingDisabled = shieldStunned || curHealth <= 0f;
-        attacking = false; 
+        /* Set flag variables back to false IF player did not cancel attack*/
+        if (lastUsedMove == moveID) {
+            movingDisabled = shieldStunned || curHealth <= 0f;
+            attacking = false; 
+        }
     }
 
     /* Method used to execute move as enemy */
@@ -441,7 +447,8 @@ public class EntityStatus : MonoBehaviour
     }
 
     /* Public method to execute player animation for swapping: WILL BE IN SEPERATE CLASS */
-    private const float SWAP_ANIM_DURATION = 0.2f;
+    private const float UNCANCELLED_SWAP = 0.1f;
+    private const float SWAP_ANIM_DURATION = 0.15f;
 
     public IEnumerator runSwapAnimation(AbilitySelector selectedMove) {
        //Change charging color
@@ -451,14 +458,16 @@ public class EntityStatus : MonoBehaviour
         float timer = 0;
         bool attackedPrimary = false; bool attackedSec = false;
 
+        yield return new WaitForSeconds(UNCANCELLED_SWAP);
+
         //Loop
         while (timer < SWAP_ANIM_DURATION && !attackedPrimary && !attackedSec) {
             yield return new WaitForFixedUpdate();
             timer += Time.deltaTime;
 
             int selectedIndex = selectedMove.getMoveIndex();
-            attackedPrimary = Input.GetMouseButton(0) && canUseMove(selectedIndex);
-            attackedSec = Input.GetMouseButton(1) && canUseMove(2);
+            attackedPrimary = Input.GetMouseButtonDown(0) && canUseMove(selectedIndex);
+            attackedSec = Input.GetMouseButtonDown(1) && canUseMove(2);
         }
 
         //Set color back to prev color
@@ -580,8 +589,8 @@ public class EntityStatus : MonoBehaviour
 
     /* Method to allow player to cancel moves: wrapper for method in player controller
         Post: returns if move cancelling is successful */
-    public bool cancelMove(int newInput) {
-        return controller.GetComponent<PlayerController>().cancelMove(newInput);
+    public bool cancelMove() {
+        return controller.GetComponent<PlayerController>().cancelledMove();
     }
 
     /* Helper method to check if move is valid

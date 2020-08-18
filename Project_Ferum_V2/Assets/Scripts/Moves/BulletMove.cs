@@ -74,7 +74,7 @@ public class BulletMove : AmmoMove
             while (Input.GetMouseButton(mouseInput) && fireRateTimer < fireRate && !cancelled) {
                 yield return new WaitForFixedUpdate();
                 fireRateTimer += Time.deltaTime;
-                cancelled = cancelInputPressed(mouseInput, fireRateTimer, fireRate);
+                cancelled = myStatus.cancelMove();
             }
 
             /* If cancelled early: set RechargeTimer to fireRate timer */
@@ -83,10 +83,6 @@ public class BulletMove : AmmoMove
                 recharging = true;
             }
         }
-
-        //If cancelled
-        if (cancelled)
-            myStatus.cancelMove((mouseInput + 1) % 2);
     }
 
     /* IEnumerator that allows an enemy / AI to attack */
